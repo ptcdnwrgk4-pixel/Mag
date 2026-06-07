@@ -1,0 +1,38 @@
+# API-Keys und Zugänge – niemals committen
+.env
+.env.*
+*.env
+
+# Betriebssystem
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+logs/
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+
+# Temporäre Dateien
+tmp/
+temp/
+*.tmp
+*.temp

@@ -1,0 +1,101 @@
+# Mein CEO-GPT — CLAUDE.md
+
+> Diese Datei wird von jedem Claude Code Mitarbeiter gelesen, der in diesem CEO-GPT arbeitet.
+> Sie ist die wichtigste Datei für die Qualität deines besten Mitarbeiters. Je mehr Kontext
+> du hier reinpackst, desto smarter wird jede Interaktion.
+>
+> Lösch diese Hinweise und fülle jeden Abschnitt für dein Business aus.
+
+## Was das hier ist
+
+<!-- Beschreib dein Business oder Projekt in zwei bis drei Sätzen. Sei spezifisch. -->
+<!-- Beispiel: "Strategisches Command Center für Acme Corp, ein SaaS Unternehmen das -->
+<!-- Projektmanagement Tools für mittelständische Firmen verkauft. Umsatz: 2 Mio. ARR, -->
+<!-- Team mit 15 Leuten, Series A." -->
+
+{Beschreib hier dein Business oder Projekt}
+
+## Wichtige Dateien
+
+<!-- Liste jede Datei auf, die dein Mitarbeiter referenzieren könnte. Sei spezifisch mit Pfaden. -->
+<!-- Das ist die "Karte", über die dein Mitarbeiter durch dein CEO-GPT navigiert. -->
+
+- `CLAUDE.md` Diese Datei (CEO-GPT Übersicht und Conventions)
+- `.claude/commands/prime.md` Volle Session Initialisierung
+- `.claude/commands/prime-telegram.md` Schnelle Telegram Session Initialisierung
+
+<!-- Trag deine wichtigen Dateien unten ein. Beispiele: -->
+<!-- - `context/strategy.md` Aktuelle strategische Prioritäten und Roadmap -->
+<!-- - `context/team.md` Team Roster, Rollen, Verantwortlichkeiten -->
+<!-- - `context/metrics.md` Neueste Business Metriken (auto-generiert) -->
+<!-- - `reference/processes.md` Standard Operating Procedures -->
+<!-- - `data/my-database.db` SQLite Datenbank mit Business Daten -->
+<!-- - `docs/api-guide.md` API Dokumentation -->
+
+## Conventions
+
+<!-- Regeln und Conventions, an die sich jeder Mitarbeiter halten soll. -->
+
+- **Währung:** {EUR, USD, GBP, etc.} alle Finanz-Werte nutzen diese Währung, sofern nicht anders ausgezeichnet.
+- **Zeitzone:** {Deine Zeitzone, z.B. Europe/Berlin, America/New_York}
+
+<!-- Trag deine Conventions unten ein. Beispiele: -->
+<!-- - Beim Schreiben von Reports starte mit einem ## Summary Abschnitt -->
+<!-- - Nutze immer das metrische System für Maße -->
+<!-- - Kundennamen sollen in Outputs anonymisiert werden -->
+<!-- - Niemals .env Dateien oder API Keys committen oder teilen -->
+
+## CEO-GPT Struktur
+
+<!-- Beschreib dein Ordner-Layout, damit dein Mitarbeiter weiß, wo er was findet und ablegt. -->
+
+```
+mein-ceo-gpt/
+|-- CLAUDE.md                    # Diese Datei
+|-- .claude/commands/            # Mitarbeiter Prime Commands
+|-- apps/command/                # Telegram Bot Code
+|-- data/                        # Datendateien und Datenbanken
+|-- context/                     # Business Kontext Dokumente
+|-- reference/                   # Evergreen Referenz-Material
+|-- outputs/                     # Generierte Outputs (Reports, Charts)
+```
+
+<!-- Erweitere das, damit es zu deiner echten Ordner-Struktur passt. -->
+<!-- Je mehr Details du angibst, desto besser navigiert dein Mitarbeiter. -->
+
+## Datenbank
+
+<!-- Falls du eine SQLite Datenbank hast, dokumentier hier ihr Schema. -->
+<!-- Dein Mitarbeiter nutzt das, um korrekte SQL Queries zu schreiben. -->
+
+<!-- Beispiel: -->
+<!-- SQLite Datenbank unter `data/my-database.db`. Wichtige Tabellen: -->
+<!-- - `customers` id, name, email, plan, signup_date, mrr -->
+<!-- - `revenue` id, customer_id, amount_eur, date, type -->
+<!-- - `metrics_daily` date, metric_name, value -->
+<!-- -->
+<!-- Häufige Queries: -->
+<!-- - Monatlicher Umsatz: `SELECT strftime('%Y-%m', date) as month, SUM(amount_eur) FROM revenue GROUP BY month` -->
+<!-- - Aktive Kunden: `SELECT COUNT(*) FROM customers WHERE plan != 'cancelled'` -->
+
+## Commands
+
+<!-- Dokumentier alle Slash Commands, die du eingerichtet hast. -->
+<!-- Mindestens hast du /prime aus den Prime Commands. -->
+
+- `/prime` Workspace Kontext laden (führt .claude/commands/prime.md aus)
+
+<!-- Füge weitere hinzu, sobald du sie baust. Beispiele: -->
+<!-- - `/update-data` Metriken aus externen Quellen aktualisieren -->
+<!-- - `/status` Executive Summary generieren -->
+<!-- - `/report [topic]` Detaillierten Report generieren -->
+
+## Session Workflow
+
+<!-- Wie dein Mitarbeiter in diesem CEO-GPT arbeiten soll. -->
+
+1. **Start:** CLAUDE.md und wichtige Kontext-Dateien lesen
+2. **Verstehen:** Verständnis des Requests bestätigen
+3. **Arbeiten:** Task mit verfügbaren Tools ausführen (Dateien, Datenbank, Web Search, Code)
+4. **Liefern:** Ergebnisse im passenden Format bereitstellen
+5. **Updaten:** Wenn die Arbeit Kontext-Dateien ändert, aktualisier sie

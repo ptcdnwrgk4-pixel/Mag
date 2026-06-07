@@ -1,0 +1,23 @@
+[Unit]
+Description=Stimme: Telegram-Verbindung zu deinem Mitarbeiter
+After=network.target
+
+[Service]
+Type=simple
+# ANPASSEN: dein Username
+User=__USERNAME__
+# ANPASSEN: Pfad zu deinem Workspace-Root
+WorkingDirectory=__WORKSPACE_ROOT__
+# ANPASSEN: Pfad zum Python in deiner virtuellen Umgebung
+ExecStart=__VENV_PYTHON__ -m apps.command.main
+Restart=always
+RestartSec=5
+StandardOutput=append:__WORKSPACE_ROOT__/data/command.stdout.log
+StandardError=append:__WORKSPACE_ROOT__/data/command.stderr.log
+
+# Umgebung
+Environment=HOME=/home/__USERNAME__
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+
+[Install]
+WantedBy=multi-user.target
