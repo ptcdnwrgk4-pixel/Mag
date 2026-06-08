@@ -36,29 +36,29 @@ class FridayScheduler:
     def _setup_jobs(self) -> None:
         from apscheduler.triggers.cron import CronTrigger
 
-        # Tages-Briefing Mo–Sa um 08:30
+        # Tages-Briefing Mo–Sa um 10:00
         self.scheduler.add_job(
             self._job_briefing,
-            CronTrigger(day_of_week="mon-sat", hour=8, minute=30),
+            CronTrigger(day_of_week="mon-sat", hour=10, minute=0),
             id="daily_briefing",
             name="Tages-Briefing",
             replace_existing=True,
         )
 
-        # Social-Media-Plan: jeden Montag 09:00
+        # Social-Media-Plan: jeden Montag 11:00
         self.scheduler.add_job(
             self._job_social,
-            CronTrigger(day_of_week="mon", hour=9, minute=0),
+            CronTrigger(day_of_week="mon", hour=11, minute=0),
             id="weekly_social",
             name="Social-Wochen-Plan",
             replace_existing=True,
         )
 
-        # Dienstplan: jeden Freitag 16:00
+        # Dienstplan: jeden 18. im Monat um 10:00
         self.scheduler.add_job(
             self._job_personal,
-            CronTrigger(day_of_week="fri", hour=16, minute=0),
-            id="weekly_personal",
+            CronTrigger(day=18, hour=10, minute=0),
+            id="monthly_personal",
             name="Dienstplan",
             replace_existing=True,
         )
