@@ -595,6 +595,57 @@ body::before {
 .corner.bl { bottom:8px; left:8px; transform:scaleY(-1); }
 .corner.br { bottom:8px; right:8px; transform:scale(-1); }
 
+/* ── AGENTEN OS PANEL ── */
+.sidebar-sep {
+  width:100%;
+  height:1px;
+  background:var(--cyan-border);
+  margin:8px 0;
+}
+.sidebar-section-title {
+  font-family:'Share Tech Mono',monospace;
+  font-size:9px;
+  color:var(--text3);
+  letter-spacing:0.15em;
+  width:100%;
+  text-align:center;
+  padding:4px 0;
+}
+.agent-btn {
+  width:100%;
+  background:transparent;
+  border:1px solid var(--cyan-border);
+  border-radius:4px;
+  padding:7px 10px;
+  color:var(--text2);
+  font-family:'Rajdhani',sans-serif;
+  font-size:12px;
+  font-weight:600;
+  cursor:pointer;
+  text-align:left;
+  letter-spacing:0.05em;
+  transition:all 0.2s;
+  display:flex;
+  align-items:center;
+  gap:7px;
+}
+.agent-btn:hover {
+  border-color:var(--cyan);
+  color:var(--cyan);
+  background:var(--cyan-dim);
+}
+.agent-status-row {
+  width:100%;
+  font-family:'Share Tech Mono',monospace;
+  font-size:9px;
+  color:var(--text3);
+  padding:3px 0;
+  display:flex;
+  justify-content:space-between;
+}
+.agent-status-row .ok { color:var(--cyan); }
+.agent-status-row .warn { color:var(--gold); }
+
 /* ── RESPONSIVE ── */
 @media(max-width:640px) {
   .sidebar { display:none; }
@@ -671,7 +722,15 @@ body::before {
         <div class="s-row"><div class="dot" id="sideListening"></div><span id="sideListeningText">BEREIT</span></div>
         <div class="s-row"><div class="dot off" id="sideProcessing"></div><span id="sideProcessingText">STANDBY</span></div>
       </div>
-      <div class="sidebar-model" id="modelInfo">claude-sonnet-4-6<br>Max-Tokens: 1024<br>Streaming: aktiv</div>
+      <div class="sidebar-sep"></div>
+      <div class="sidebar-section-title">AGENTEN OS</div>
+      <button class="agent-btn" onclick="triggerAgent('briefing')">📋 Tages-Briefing</button>
+      <button class="agent-btn" onclick="triggerAgent('social')">📱 Social Post</button>
+      <button class="agent-btn" onclick="triggerAgent('orders')">📦 Bestellliste</button>
+      <button class="agent-btn" onclick="triggerAgent('personal')">👥 Dienstplan</button>
+      <div class="sidebar-sep"></div>
+      <div id="agentStatus" style="width:100%"></div>
+      <div class="sidebar-model" id="modelInfo">claude-sonnet-4-6<br>Max-Tokens: 1500<br>Streaming: aktiv</div>
       <button class="sidebar-clr" onclick="clearHistory()">CHAT LÖSCHEN</button>
     </div>
 
@@ -734,6 +793,39 @@ let recognition = null;
 let isRecording = false;
 const API_KEY = 'friday_key';
 
+// ── AGENTEN OS ──
+const AGENT_PROMPTS = {
+  briefing: "Erstelle das heutige Tages-Briefing: Lies context/strategy.md, context/current-data.md und context/aufgaben.md. Fasse zusammen: heutiger Fokus, Stand zur Strategie (neue Karte / Social Media), Top 3 offene Aufgaben, deine Einschätzung. Kurz und direkt.",
+  social:   "Erstelle einen Social-Media-Post für das Padella Vino für heute. Authentisch, nicht werblich, mit 8-10 passenden Hashtags. Lies context/business-info.md für Tonalität. Fertig zum Posten.",
+  orders:   "Erstelle die aktuelle Bestellliste. Kategorisiert nach: ☕ Kaffee/Heißgetränke, 🍷 Wein/Spirits, 🍹 Bar-Komponenten, 🥗 Küche, 📦 Verbrauchsmaterial. Priorität pro Position: DRINGEND / DIESE WOCHE / SPÄTER.",
+  personal: "Erstelle den Dienstplan für nächste Woche. Team: 1 Teilzeitkraft + 4 Minijobber. Minijob-Grenze 556€/Monat beachten. Als Tabelle mit Stundenübersicht.",
+};
+
+function triggerAgent(name) {
+  const field = document.getElementById('inputField');
+  field.value = AGENT_PROMPTS[name] || '';
+  field.style.height = 'auto';
+  field.style.height = Math.min(field.scrollHeight, 120) + 'px';
+  field.focus();
+}
+
+async function loadAgentStatus() {
+  try {
+    const resp = await fetch('../../memory/status.json', {cache: 'no-store'});
+    if (!resp.ok) return;
+    const data = await resp.json();
+    const el = document.getElementById('agentStatus');
+    if (!el || !data.agents?.length) return;
+    const labels = {briefing:'Briefing', social:'Social', orders:'Orders', personal:'Personal'};
+    let html = '';
+    for (const a of data.agents) {
+      const ts = a.last_run ? a.last_run.substring(5, 16).replace('T',' ') : '—';
+      html += `<div class="agent-status-row"><span>${labels[a.agent]||a.agent}</span><span class="ok">${ts}</span></div>`;
+    }
+    el.innerHTML = html;
+  } catch(e) {}
+}
+
 // ── BOOT SEQUENCE ──
 const bootMessages = [
   {text:'> NEURAL INTERFACE... INITIALISIERUNG', delay:400, cls:''},
@@ -741,7 +833,7 @@ const bootMessages = [
   {text:'> BUSINESS-KONTEXT... MAX / CAFÉ-BAR', delay:1200, cls:'ok'},
   {text:'> DATENANALYSE... BEREIT', delay:1600, cls:'ok'},
   {text:'> SPRACHSTEUERUNG... VERFÜGBAR', delay:2000, cls:'ok'},
-  {text:'> TELEGRAM-VERBINDUNG... AUSSTEHEND', delay:2400, cls:'warn'},
+  {text:'> AGENTEN OS... BRIEFING / SOCIAL / ORDERS', delay:2400, cls:'ok'},
   {text:'> SYSTEM STATUS... VOLLSTÄNDIG ONLINE', delay:2800, cls:'ok'},
 ];
 
@@ -801,6 +893,8 @@ function showApp() {
   setTimeout(() => app.classList.add('visible'), 50);
   updateTime();
   setInterval(updateTime, 1000);
+  loadAgentStatus();
+  setInterval(loadAgentStatus, 60000);
 
   // Welcome message
   setTimeout(() => {
