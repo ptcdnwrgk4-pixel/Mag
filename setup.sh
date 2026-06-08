@@ -13,26 +13,45 @@ echo ""
 
 echo "▶ Python wird geprüft..."
 
-if ! command -v python3 &>/dev/null; then
+# Python 3.12 bevorzugen (3.14 hat macOS-Kompatibilitätsprobleme)
+if command -v python3.12 &>/dev/null; then
+    PYTHON=python3.12
+elif command -v python3.11 &>/dev/null; then
+    PYTHON=python3.11
+elif command -v python3 &>/dev/null; then
+    PYTHON=python3
+else
     echo ""
-    echo "✗ Python 3 nicht gefunden."
+    echo "✗ Python nicht gefunden."
     echo ""
-    echo "  Bitte installieren unter: https://www.python.org/downloads/"
-    echo "  Danach setup.sh erneut ausführen."
+    echo "  Bitte installieren: https://www.python.org/downloads/release/python-3126/"
+    echo "  → macOS 64-bit universal2 installer"
     echo ""
     exit 1
 fi
 
-PYTHON_VERSION=$(python3 -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')")
-REQUIRED="3.11"
+# Version prüfen
+PYTHON_VERSION=$($PYTHON -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')" 2>/dev/null)
 
-if python3 -c "import sys; exit(0 if sys.version_info >= (3,11) else 1)" 2>/dev/null; then
-    echo "  ✓ Python $PYTHON_VERSION"
+if [ -z "$PYTHON_VERSION" ]; then
+    echo ""
+    echo "✗ Python gefunden, aber nicht lauffähig (möglicherweise macOS-Kompatibilitätsproblem)."
+    echo ""
+    echo "  Bitte Python 3.12 installieren:"
+    echo "  https://www.python.org/downloads/release/python-3126/"
+    echo "  → macOS 64-bit universal2 installer"
+    echo ""
+    exit 1
+fi
+
+if $PYTHON -c "import sys; exit(0 if sys.version_info >= (3,11) else 1)" 2>/dev/null; then
+    echo "  ✓ Python $PYTHON_VERSION ($PYTHON)"
 else
     echo ""
     echo "  ✗ Python $PYTHON_VERSION — mindestens 3.11 benötigt."
     echo ""
-    echo "  Bitte aktualisieren: https://www.python.org/downloads/"
+    echo "  Bitte Python 3.12 installieren:"
+    echo "  https://www.python.org/downloads/release/python-3126/"
     echo ""
     exit 1
 fi
@@ -41,7 +60,7 @@ fi
 
 if [ ! -d ".venv" ]; then
     echo "▶ Virtuelle Umgebung wird erstellt..."
-    python3 -m venv .venv
+    $PYTHON -m venv .venv
     echo "  ✓ .venv erstellt"
 else
     echo "  ✓ .venv vorhanden"
