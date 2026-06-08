@@ -85,6 +85,7 @@ Wir bauen den Mitarbeiter in Teilen auf. Jeder Teil ist für sich nützlich, und
 ├── outputs/                 # Fertige Arbeit, Reports, Analysen
 ├── reference/               # Vorlagen und wiederverwendbare Muster
 ├── scripts/                 # Automatisierungs-Skripte (kommen mit neuen Fähigkeiten)
+│   └── tradingbot/          # TradingBot (RSI + Bollinger Band, Trade Republic)
 └── shares/                  # Verpackte Systeme zum Weitergeben (aus /share)
 ```
 
@@ -168,6 +169,20 @@ Du nennst das Angebot, dein Mitarbeiter schreibt den Post – mit Preis, Call-to
 ### /task-audit
 
 Geführtes Interview, das jede wiederkehrende Aufgabe in deinem Business kartiert. Ergebnis ist eine Übersicht mit Bewertung pro Aufgabe (voll automatisierbar, teilweise, noch nicht, nur Mensch). Das ist die Grundlage für den Hand-Teil.
+
+### TradingBot
+
+Vollautomatischer Trading-Bot für Trade Republic. Kombiniert RSI Reversal + Bollinger Band Reversal. Läuft stündlich, handelt Aktien, Krypto und Derivate mit Echtgeld.
+
+```bash
+python scripts/tradingbot/bot.py --setup    # Einmalig: Trade Republic Login einrichten
+python scripts/tradingbot/bot.py --status   # Aktuelle Positionen und heutigen P&L anzeigen
+python scripts/tradingbot/bot.py --dry-run  # Signale testen ohne echte Orders
+python scripts/tradingbot/bot.py            # Echtgeld-Betrieb starten
+```
+
+Assets und Strategie-Parameter in `scripts/tradingbot/config.py` anpassen.
+Alle Trades und Signale werden in `scripts/tradingbot/tradingbot.db` geloggt.
 
 ---
 
