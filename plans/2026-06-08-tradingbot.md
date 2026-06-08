@@ -1,7 +1,7 @@
 # Plan: TradingBot – RSI Reversal + Bollinger Band Kombination
 
 **Erstellt:** 2026-06-08
-**Status:** Entwurf
+**Status:** Umgesetzt
 **Anfrage:** Vollautomatischer TradingBot für Trade Republic (Aktien, Krypto, Derivate) mit kombinierter RSI + Bollinger-Band-Strategie und hartem Risikomanagement
 
 ---
@@ -407,3 +407,23 @@ Die Umsetzung ist fertig, wenn:
 - **Krypto 24/7:** Bot läuft durch, auch nachts. Aktien werden nur während Handelszeiten signifikante Bewegungen haben, aber Crypto braucht den Nacht-Check.
 - **Derivate (ISINs):** Derivate haben oft kurze Laufzeiten. Yahoo Finance hat für viele Trade-Republic-Derivate keine Daten. Für Derivate wird der Bot reine TR-Preisdaten nutzen, ohne 200MA-Filter.
 - **Weiterentwicklung:** Telegram-Benachrichtigungen via `stimme`-Modul sind der logische nächste Schritt nach erfolgreichem Betrieb.
+
+---
+
+## Umsetzungs-Notizen
+
+**Umgesetzt:** 2026-06-08
+
+### Zusammenfassung
+
+Alle 8 Python-Module in `scripts/tradingbot/` angelegt. requirements.txt, .env, .gitignore und CLAUDE.md aktualisiert. Alle Module mit synthetischen Daten getestet und verifiziert.
+
+### Abweichungen vom Plan
+
+- `ta`-Bibliothek (Plan) durch `ta-lib` ersetzt – `ta` ließ sich in der Umgebung nicht bauen, `talib` ist stabiler und die Standard-Bibliothek für technische Analyse
+- `calculate_position_size` in risk_manager.py verbessert: gibt für Krypto (BTC @ 50k) korrekt Bruchteile zurück statt 0
+
+### Aufgetretene Probleme
+
+- `ta`-Paket Build-Fehler: gelöst durch Wechsel auf `talib` (TA-Lib)
+- Yahoo Finance 403 im Sandbox-Netzwerk: kein Code-Fehler, nur Umgebungseinschränkung – auf dem eigenen Rechner läuft es

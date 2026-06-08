@@ -1,0 +1,109 @@
+import numpy as np
+import pandas as pd
+import talib
+
+
+def calculate_signals(df: pd.DataFrame, config) -> dict:
+    """
+    Berechnet RSI + Bollinger Bänder auf täglichen Schlusskursen.
+
+    Kombinierte Kauflogik (ALLE Bedingungen müssen zutreffen):
+      - RSI < RSI_BUY (überverkauft)
+      - Preis <= unteres Bollinger Band
+      - Preis > 200-Tage-MA (kein Kauf im Langzeit-Abwärtstrend)
+
+    Verkauflogik (EINE Bedingung reicht):
+      - RSI > RSI_SELL (überkauft)
+      - Preis >= oberes Bollinger Band
+
+    Erwartet df mit Spalte 'close'. Gibt Signal-Dict zurück.
+    """
+    min_rows = max(config.RSI_PERIOD, config.BB_PERIOD, config.MA_TREND_PERIOD)
+    if len(df) < min_rows:
+        return {
+            "signal":   "HOLD",
+            "rsi":      None,
+            "bb_lower": None,
+            "bb_upper": None,
+            "ma200":    None,
+            "price":    None,
+            "reason":   f"Nicht genug Daten ({len(df)} < {min_rows})",
+        }
+
+    close = df["close"].astype(float).values
+
+    # RSI
+    rsi_arr = talib.RSI(close, timeperiod=config.RSI_PERIOD)
+    rsi = float(rsi_arr[-1])
+
+    # Bollinger Bänder
+    upper_arr, _, lower_arr = talib.BBANDS(
+        close,
+        timeperiod=config.BB_PERIOD,
+        nbdevup=config.BB_STD,
+        nbdevdn=config.BB_STD,
+        matype=0,  # SMA
+    )
+    bb_upper = float(upper_arr[-1])
+    bb_lower = float(lower_arr[-1])
+
+    # 200-Tage MA
+    ma200_arr = talib.MA(close, timeperiod=config.MA_TREND_PERIOD)
+    ma200 = float(ma200_arr[-1])
+
+    price = float(close[-1])
+
+    if np.isnan(rsi) or np.isnan(bb_upper) or np.isnan(bb_lower) or np.isnan(ma200):
+        return {
+            "signal":   "HOLD",
+            "rsi":      None,
+            "bb_lower": None,
+            "bb_upper": None,
+            "ma200":    None,
+            "price":    price,
+            "reason":   "Indikator-Berechnung liefert NaN (zu wenig Daten)",
+        }
+
+    base = {
+        "rsi":      rsi,
+        "bb_lower": bb_lower,
+        "bb_upper": bb_upper,
+        "ma200":    ma200,
+        "price":    price,
+    }
+
+    # BUY: alle drei Bedingungen
+    if rsi < config.RSI_BUY and price <= bb_lower and price > ma200:
+        return {
+            **base,
+            "signal": "BUY",
+            "reason": (
+                f"RSI={rsi:.1f}<{config.RSI_BUY} | "
+                f"Preis={price:.4f}<=BB_low={bb_lower:.4f} | "
+                f"über MA200={ma200:.4f}"
+            ),
+        }
+
+    # SELL: eine reicht
+    if rsi > config.RSI_SELL:
+        return {
+            **base,
+            "signal": "SELL",
+            "reason": f"RSI={rsi:.1f}>{config.RSI_SELL}",
+        }
+
+    if price >= bb_upper:
+        return {
+            **base,
+            "signal": "SELL",
+            "reason": f"Preis={price:.4f}>=BB_up={bb_upper:.4f}",
+        }
+
+    return {
+        **base,
+        "signal": "HOLD",
+        "reason": (
+            f"RSI={rsi:.1f} | Preis={price:.4f} | "
+            f"BB=[{bb_lower:.4f}–{bb_upper:.4f}] | MA200={ma200:.4f}"
+        ),
+    }

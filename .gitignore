@@ -36,3 +36,7 @@ tmp/
 temp/
 *.tmp
 *.temp
+
+# TradingBot
+tradingbot.db
+scripts/tradingbot/*.db
