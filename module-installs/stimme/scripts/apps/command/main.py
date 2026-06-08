@@ -182,6 +182,39 @@ async def main() -> None:
             f"{_C.BRIGHT_GREEN}{_C.BOLD}Online \u2014 polling for messages{_C.RESET}"
         )
         _print_separator()
+
+        # \u2500\u2500 Friday Scheduler starten \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+        try:
+            import sys
+            ws = config.workspace_dir
+            if ws not in sys.path:
+                sys.path.insert(0, ws)
+
+            from scheduler.runner import FridayScheduler
+
+            async def _send_scheduled(text: str) -> None:
+                try:
+                    await bot.send_message(
+                        chat_id=config.group_id,
+                        text=text[:4000],
+                        parse_mode=None,
+                    )
+                except Exception as exc:
+                    system.warning("Scheduler-Nachricht fehlgeschlagen: %s", exc)
+
+            _friday_scheduler = FridayScheduler(send_fn=_send_scheduled)
+            _friday_scheduler.start()
+
+            system.info("Friday Scheduler gestartet")
+            for job in _friday_scheduler.next_runs():
+                system.info("  %-22s n\u00e4chster Run: %s", job["name"], job["next_run"] or "\u2014")
+
+        except ImportError:
+            system.warning("Scheduler nicht gefunden (scheduler/runner.py) \u2014 autonome Jobs inaktiv")
+        except Exception as exc:
+            system.warning("Scheduler konnte nicht gestartet werden: %s", exc)
+
+        # \u2500\u2500 Startup-Meldung \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
         try:
             await bot.send_message(
                 chat_id=config.group_id,
