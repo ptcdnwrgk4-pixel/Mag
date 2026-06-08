@@ -122,23 +122,19 @@ def cmd_scheduler() -> None:
 
     _header("Friday Scheduler — startet autonome Jobs")
 
-    async def _run() -> None:
-        sched = FridayScheduler()
-        sched.start()
-        for job in sched.next_runs():
-            print(f"  {job['name']:20} — nächster Run: {job['next_run'] or '—'}")
-        print()
-        try:
-            while True:
-                await asyncio.sleep(60)
-        except asyncio.CancelledError:
-            pass
-        finally:
-            sched.stop()
+    sched = FridayScheduler()
+    sched.start()
+
+    for job in sched.next_runs():
+        print(f"  {job['name']:20} — nächster Run: {job['next_run'] or '—'}")
+    print()
 
     try:
-        asyncio.run(_run())
+        while True:
+            import time
+            time.sleep(60)
     except KeyboardInterrupt:
+        sched.stop()
         print("\nScheduler gestoppt.")
 
 

@@ -27,9 +27,9 @@ class FridayScheduler:
             send_fn: Optionale async-Funktion zum Versenden der Ergebnisse
                      (z.B. Telegram-Nachricht). Signatur: async def send(text: str)
         """
-        from apscheduler.schedulers.asyncio import AsyncIOScheduler
+        from apscheduler.schedulers.background import BackgroundScheduler
 
-        self.scheduler = AsyncIOScheduler(timezone="Europe/Berlin")
+        self.scheduler = BackgroundScheduler(timezone="Europe/Berlin")
         self.send_fn = send_fn
         self._setup_jobs()
 
