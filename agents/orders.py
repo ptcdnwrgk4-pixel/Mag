@@ -1,55 +1,45 @@
-"""OrdersAgent — Bestelllisten und Lagerstand-Management."""
+"""OrdersAgent — Bestelllisten."""
 
 from datetime import datetime
+from pathlib import Path
 
-from .base import AgentResult, SpecialistAgent
+from .base import AgentResult, SpecialistAgent, _save_output
 
 _SYSTEM = """
 Du bist Friday's Bestell-Assistent für das Padella Vino.
 
-Deine Aufgabe:
-- Bestelllisten strukturiert erstellen
-- Prioritäten klar kennzeichnen (DRINGEND / DIESE WOCHE / SPÄTER)
-- Lieferanten wenn bekannt angeben
-- Mengen realistisch einschätzen (Café-Bar, ~60-80k € Umsatz p.a.)
+Erstelle strukturierte Bestelllisten mit:
+- Kategorisierung: ☕ Kaffee | 🍷 Wein/Spirits | 🍹 Bar | 🥗 Küche | 📦 Verbrauchsmaterial
+- Priorität pro Position: DRINGEND / DIESE WOCHE / SPÄTER
+- Menge wenn einschätzbar
+- Lieferant wenn bekannt
 
-Kategorien:
-- ☕ Kaffee & Heißgetränke
-- 🍷 Wein & Spirituosen
-- 🍹 Bar (Sirups, Mixers, Sprizz-Komponenten)
-- 🥗 Küche (Lebensmittel, Frische)
-- 📦 Verbrauchsmaterial (Gläser, Servietten, To-Go)
-- 🔧 Sonstiges
-
-Format: übersichtliche Tabelle, direkt in Markdown.
+Format: Tabelle in Markdown.
 """
 
 _TASK = """
 Erstelle die aktuelle Bestellliste für das Padella Vino. Datum: {datum}
 
-1. Lies context/aufgaben.md nach Bestell-Notizen und Engpässen
-2. Lies context/current-data.md nach Lagerstand-Hinweisen
-3. Lies context/business-info.md für Produktkategorien und Sortiment
+Analysiere den Kontext auf Hinweise zu:
+- Niedrigem Lagerbestand
+- Ausstehenden Bestellungen aus aufgaben.md
+- Saisonalen Besonderheiten
 
-Erstelle eine strukturierte Bestellliste:
-- Nach Kategorien sortiert
-- Priorität pro Position
-- Mengenschätzung wenn möglich
-- Lieferant wenn bekannt
-
-Speichere als outputs/bestellen-{datum}.md
-Gib eine kurze Zusammenfassung zurück: wie viele Positionen, was ist DRINGEND?
+Erstelle dann die vollständige, priorisierte Bestellliste.
 """
 
 
 class OrdersAgent(SpecialistAgent):
     name = "orders"
-    description = "Erstellt und verwaltet Bestelllisten"
-    model = "sonnet"
-    max_turns = 12
-    max_budget_usd = 1.00
+    description = "Erstellt Bestelllisten"
     system_append = _SYSTEM
 
-    async def run_scheduled_task(self) -> AgentResult:
+    def run_scheduled_task(self) -> AgentResult:
         today = datetime.now().strftime("%Y-%m-%d")
-        return await self.run(_TASK.format(datum=today))
+        result = self.run(_TASK.format(datum=today))
+
+        if not result.is_error and result.text:
+            path = _save_output(f"bestellen-{today}.md", result.text)
+            result.output_files = [str(path.relative_to(Path(__file__).parent.parent))]
+
+        return result

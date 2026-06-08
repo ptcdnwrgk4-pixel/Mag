@@ -1,127 +1,135 @@
-"""Basis-Klasse für alle Friday Specialist Agents."""
+"""Basis-Klasse für alle Friday Specialist Agents.
+
+Verwendet die Anthropic Python SDK direkt — kein Node.js oder Claude CLI nötig.
+Kontext-Dateien werden vor jedem Run geladen und in den System-Prompt eingebettet.
+"""
 
 import logging
 import os
-import re
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from anthropic import Anthropic
+
 logger = logging.getLogger(__name__)
 
-WORKSPACE_DIR = str(Path(__file__).resolve().parent.parent)
+WORKSPACE = Path(__file__).resolve().parent.parent
+CONTEXT_FILES = [
+    "strategy.md",
+    "business-info.md",
+    "current-data.md",
+    "aufgaben.md",
+    "personal-info.md",
+]
 
 
 @dataclass
 class AgentResult:
     text: str
     cost_usd: float = 0.0
-    duration_ms: int = 0
-    num_turns: int = 0
+    num_turns: int = 1
     is_error: bool = False
     output_files: list[str] = field(default_factory=list)
+    duration_ms: int = 0
+
+
+def _load_context() -> str:
+    """Lädt alle verfügbaren context/-Dateien."""
+    parts = []
+    for name in CONTEXT_FILES:
+        path = WORKSPACE / "context" / name
+        if path.exists():
+            content = path.read_text(encoding="utf-8").strip()
+            if content:
+                parts.append(f"## {name}\n{content}")
+    return "\n\n---\n\n".join(parts) if parts else ""
+
+
+def _save_output(filename: str, content: str) -> Path:
+    """Speichert Ergebnis in outputs/."""
+    out_dir = WORKSPACE / "outputs"
+    out_dir.mkdir(exist_ok=True)
+    path = out_dir / filename
+    path.write_text(content, encoding="utf-8")
+    return path
 
 
 class SpecialistAgent:
     """Basis für alle Friday Specialist Agents.
 
     Jeder Agent:
-    - Läuft als vollständige Claude Code Session (via claude-agent-sdk)
-    - Hat Zugriff auf alle Workspace-Dateien und Tools
-    - Speichert Ergebnisse in outputs/
-    - Protokolliert in memory/friday.db
+    - Lädt beim Start die context/-Dateien
+    - Schickt Task + Kontext an Claude (Anthropic API)
+    - Speichert Ergebnis in outputs/
+    - Gibt AgentResult zurück
     """
 
     name: str = "base"
     description: str = "Basis-Agent"
-    model: str = "sonnet"
-    max_turns: int = 20
-    max_budget_usd: float = 2.00
+    model: str = "claude-sonnet-4-6"
+    max_tokens: int = 4096
 
-    system_append: str = """
-Du bist Friday — die persönliche KI-Assistentin von Max.
-Max ist Inhaber eines Café-Bars am Marktplatz (Padella Vino).
-Sei direkt, präzise, analytisch. Keine Weichspüler-Antworten.
-Lies immer zuerst die relevanten context/-Dateien, bevor du antwortest.
-Speichere Ergebnisse in outputs/ und nenne den Pfad am Ende deiner Antwort.
-"""
+    system_append: str = ""
 
-    def _build_options(self):
-        from claude_agent_sdk import ClaudeAgentOptions
+    def _get_client(self) -> Anthropic:
+        api_key = os.getenv("ANTHROPIC_API_KEY", "").strip()
+        if not api_key:
+            raise ValueError(
+                "ANTHROPIC_API_KEY fehlt in .env — "
+                "Key holen unter: console.anthropic.com"
+            )
+        return Anthropic(api_key=api_key)
 
-        env = {k: v for k, v in os.environ.items() if k != "CLAUDECODE"}
-
-        return ClaudeAgentOptions(
-            system_prompt={
-                "type": "preset",
-                "preset": "claude_code",
-                "append": self.system_append,
-            },
-            setting_sources=["project"],
-            cwd=WORKSPACE_DIR,
-            allowed_tools=[
-                "Read", "Write", "Edit", "Bash", "Glob", "Grep",
-                "WebSearch", "WebFetch",
-            ],
-            permission_mode="bypassPermissions",
-            max_turns=self.max_turns,
-            max_budget_usd=self.max_budget_usd,
-            model=self.model,
-            env=env,
+    def _build_system(self) -> str:
+        base = (
+            "Du bist Friday — die persönliche KI-Assistentin von Max.\n"
+            "Max ist Inhaber eines Café-Bars am Marktplatz (Padella Vino).\n"
+            "Sei direkt, analytisch, präzise. Keine Weichspüler-Antworten.\n\n"
         )
+        context = _load_context()
+        if context:
+            base += f"## Business-Kontext\n\n{context}\n\n"
+        if self.system_append:
+            base += self.system_append
+        return base
 
-    async def run(self, task: str) -> AgentResult:
-        from claude_agent_sdk import (
-            AssistantMessage,
-            ResultMessage,
-            TextBlock,
-            query,
-        )
-
-        options = self._build_options()
-        latest_text: list[str] = []
-        final: ResultMessage | None = None
+    def run(self, task: str) -> AgentResult:
+        import time
+        start = time.time()
 
         logger.info("[%s] Starte: %s", self.name, task[:80])
 
         try:
-            async for msg in query(prompt=task, options=options):
-                if isinstance(msg, AssistantMessage):
-                    parts = [b.text for b in msg.content if isinstance(b, TextBlock)]
-                    if parts:
-                        latest_text = parts
-                elif isinstance(msg, ResultMessage):
-                    final = msg
-
-        except RuntimeError as exc:
-            if "cancel scope" in str(exc):
-                logger.warning("[%s] anyio cancel scope suppressed", self.name)
-            else:
-                raise
+            client = self._get_client()
+            response = client.messages.create(
+                model=self.model,
+                max_tokens=self.max_tokens,
+                system=self._build_system(),
+                messages=[{"role": "user", "content": task}],
+            )
         except Exception as exc:
-            logger.exception("[%s] Fehler", self.name)
-            return AgentResult(
-                text=f"Fehler im {self.name}-Agenten: {exc}",
-                is_error=True,
-            )
+            logger.exception("[%s] API-Fehler", self.name)
+            return AgentResult(text=f"Fehler: {exc}", is_error=True)
 
-        text = "\n".join(latest_text)
+        text = response.content[0].text if response.content else ""
+        duration_ms = int((time.time() - start) * 1000)
 
-        if final:
-            return AgentResult(
-                text=text,
-                cost_usd=final.total_cost_usd or 0.0,
-                duration_ms=final.duration_ms or 0,
-                num_turns=final.num_turns or 0,
-                is_error=final.is_error or False,
-                output_files=self._find_outputs(text),
-            )
+        # Kosten schätzen (Sonnet: $3/$15 per MTok input/output)
+        input_tokens = response.usage.input_tokens if response.usage else 0
+        output_tokens = response.usage.output_tokens if response.usage else 0
+        cost = (input_tokens * 3 + output_tokens * 15) / 1_000_000
 
-        return AgentResult(text=text or "Kein Output.", is_error=not text)
+        logger.info(
+            "[%s] Fertig: %d Tokens, $%.4f, %dms",
+            self.name, input_tokens + output_tokens, cost, duration_ms,
+        )
 
-    def _find_outputs(self, text: str) -> list[str]:
-        """Findet Output-Datei-Pfade im Ergebnistext."""
-        raw = re.findall(r'outputs/[\w\-/]+\.\w{1,10}', text)
-        return [p for p in raw if (Path(WORKSPACE_DIR) / p).exists()]
+        return AgentResult(
+            text=text,
+            cost_usd=cost,
+            duration_ms=duration_ms,
+            is_error=False,
+        )
 
-    async def run_scheduled_task(self) -> AgentResult:
+    def run_scheduled_task(self) -> AgentResult:
         raise NotImplementedError(f"{self.name} hat keine Scheduled-Aufgabe")

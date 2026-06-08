@@ -75,24 +75,6 @@ pip install --upgrade pip --quiet
 pip install -r requirements.txt --quiet
 echo "  ✓ Pakete installiert"
 
-# ── Claude prüfen ─────────────────────────────────────────────────────────────
-
-echo "▶ Claude CLI wird geprüft..."
-
-if ! command -v claude &>/dev/null; then
-    echo ""
-    echo "  ✗ Claude CLI nicht gefunden."
-    echo ""
-    echo "  Installieren mit:"
-    echo "    npm install -g @anthropic-ai/claude-code"
-    echo ""
-    echo "  (Node.js benötigt: https://nodejs.org)"
-    echo ""
-    exit 1
-fi
-
-echo "  ✓ Claude CLI vorhanden"
-
 # ── .env prüfen ───────────────────────────────────────────────────────────────
 
 echo "▶ Konfiguration wird geprüft..."
@@ -109,33 +91,17 @@ if [ ! -f ".env" ]; then
     exit 1
 fi
 
-if ! grep -q "TELEGRAM_BOT_TOKEN=." .env 2>/dev/null; then
-    echo "  ✗ TELEGRAM_BOT_TOKEN fehlt in .env"
-    exit 1
-fi
-
-if ! grep -q "TELEGRAM_GROUP_ID=." .env 2>/dev/null; then
-    echo "  ✗ TELEGRAM_GROUP_ID fehlt in .env"
+if ! grep -q "ANTHROPIC_API_KEY=sk-ant-" .env 2>/dev/null; then
+    echo ""
+    echo "  ✗ ANTHROPIC_API_KEY fehlt in .env"
+    echo ""
+    echo "  Key holen unter: console.anthropic.com → API Keys → Create Key"
+    echo "  Dann in .env eintragen: ANTHROPIC_API_KEY=sk-ant-..."
+    echo ""
     exit 1
 fi
 
 echo "  ✓ .env vollständig"
-
-# ── Stimme-Modul installieren ─────────────────────────────────────────────────
-
-echo "▶ Bot-Dateien werden eingerichtet..."
-
-if [ ! -d "apps" ]; then
-    cp -r module-installs/stimme/scripts/apps .
-    echo "  ✓ Bot-Modul installiert"
-else
-    echo "  ✓ Bot-Modul vorhanden"
-fi
-
-# Prime-Befehle
-if [ -d "module-installs/stimme/scripts/.claude" ]; then
-    cp -rn module-installs/stimme/scripts/.claude/commands/. .claude/commands/ 2>/dev/null || true
-fi
 
 # ── Fertig ────────────────────────────────────────────────────────────────────
 
@@ -143,11 +109,10 @@ echo ""
 echo "════════════════════════════════════════"
 echo "  ✓ Setup abgeschlossen"
 echo ""
-echo "  Bot starten:"
+echo "  Friday starten:"
 echo "    ./start.sh"
 echo ""
-echo "  Oder manuell:"
-echo "    source .venv/bin/activate"
-echo "    python -m apps.command.main"
+echo "  Oder einzelnen Agenten testen:"
+echo "    source .venv/bin/activate && python friday.py briefing"
 echo "════════════════════════════════════════"
 echo ""

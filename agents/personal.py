@@ -1,64 +1,57 @@
-"""PersonalAgent — Dienstpläne und Team-Management."""
+"""PersonalAgent — Dienstpläne."""
 
-from datetime import date
+from datetime import date, timedelta
+from pathlib import Path
 
-from .base import AgentResult, SpecialistAgent
+from .base import AgentResult, SpecialistAgent, _save_output
 
 _SYSTEM = """
 Du bist Friday's Personalplaner für das Padella Vino.
 
-Das Team:
-- Max (Inhaber, immer dabei)
-- 1 Teilzeitkraft
-- 4 Minijobber
-
-Wichtige Regeln:
+Regeln:
 - Minijob-Grenze: 556 €/Monat (ca. 40-45h bei Mindestlohn)
-- Öffnungszeiten: typ. Di-So, Frühschicht ab 09:00, Abend bis ~22:00
-- Samstag/Sonntag: höhere Auslastung — mehr Personal einplanen
-- Saisonalität berücksichtigen (Sommer = Terrasse = mehr Bedarf)
+- Team: Max (Inhaber) + 1 Teilzeitkraft + 4 Minijobber
+- Schichten: Früh (09-14 Uhr), Mittag (12-17 Uhr), Abend (17-22 Uhr)
+- Sa/So: höhere Auslastung → mehr Personal
 
-Format: Wochenplan als Tabelle (Tag × Schicht × Person), darunter Stundenübersicht.
+Format: Tabelle (Tag × Schicht × Person) + Stundenübersicht pro Mitarbeiter.
 """
 
 _TASK = """
 Erstelle den Dienstplan für KW {kw} ({von} bis {bis}).
 
-1. Lies context/personal-info.md (Team-Details, falls vorhanden)
-2. Lies context/current-data.md nach Auslastungshinweisen
-3. Lies context/aufgaben.md nach Personal-Notizen
+Berücksichtige:
+- Saisonale Auslastung (aktueller Monat: {monat})
+- Minijob-Grenzen für alle Minijobber
+- Ausgewogene Verteilung
 
-Erstelle:
-- Wochenplan als Tabelle
-- Stunden-Übersicht pro Mitarbeiter
-- Hinweis wenn Minijob-Grenze in Gefahr
-- Besondere Hinweise (Feiertage, Events)
-
-Speichere als outputs/dienstplan-KW{kw}.md
+Liefere:
+1. Wochenplan als Tabelle
+2. Stundenübersicht (Soll vs. geplant)
+3. Hinweise falls Grenzen knapp werden
 """
 
 
 class PersonalAgent(SpecialistAgent):
     name = "personal"
-    description = "Erstellt Dienstpläne und verwaltet das Team"
-    model = "sonnet"
-    max_turns = 15
-    max_budget_usd = 1.00
+    description = "Erstellt Dienstpläne"
     system_append = _SYSTEM
 
-    async def run_scheduled_task(self) -> AgentResult:
+    def run_scheduled_task(self) -> AgentResult:
         today = date.today()
-        iso = today.isocalendar()
-        kw = iso[1] + 1  # Nächste Woche planen
-
-        from datetime import timedelta
+        kw = today.isocalendar()[1] + 1
         mon = today + timedelta(days=(7 - today.weekday()))
         sun = mon + timedelta(days=6)
 
-        return await self.run(
-            _TASK.format(
-                kw=kw,
-                von=mon.strftime("%d.%m."),
-                bis=sun.strftime("%d.%m.%Y"),
-            )
-        )
+        result = self.run(_TASK.format(
+            kw=kw,
+            von=mon.strftime("%d.%m."),
+            bis=sun.strftime("%d.%m.%Y"),
+            monat=mon.strftime("%B"),
+        ))
+
+        if not result.is_error and result.text:
+            path = _save_output(f"dienstplan-KW{kw}.md", result.text)
+            result.output_files = [str(path.relative_to(Path(__file__).parent.parent))]
+
+        return result

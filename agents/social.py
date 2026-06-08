@@ -1,82 +1,73 @@
 """SocialAgent — Social-Media-Posts und Wochenpläne."""
 
 from datetime import date, datetime
+from pathlib import Path
 
-from .base import AgentResult, SpecialistAgent
+from .base import AgentResult, SpecialistAgent, _save_output
 
 _SYSTEM = """
-Du bist Friday's Social-Media-Spezialist für das Padella Vino Café-Bar am Marktplatz.
+Du bist Friday's Social-Media-Spezialist für das Padella Vino.
 
-Das Business:
-- Hochwertige Kaffeespezialitäten, ~17 Sprizz-Varianten, kuratierte ital. Weinkarte
-- Kleine Speisen zum Verweilen
-- Stimmung: laid-back, authentisch, Süditalien trifft Marktplatz-Flair
-
-Dein Stil:
+Stil:
 - Authentisch, nicht werblich
 - Kurz und visuell vorstellbar
-- Abwechslungsreich — nicht immer dieselbe Struktur
-- Hashtags strategisch, nicht als Spam
+- Abwechslungsreich in der Struktur
 - Auf Deutsch, gelegentlich ital. Einsprengsel okay
+- Hashtags: 8-10, themenrelevant, nicht als Spam
 
-Posts immer in Outputs speichern, Pfad angeben.
+Gib immer den fertigen Post-Text zurück, direkt verwendbar.
 """
 
 _POST_TASK = """
 Erstelle einen Social-Media-Post für das Padella Vino.
 
-1. Lies context/business-info.md (Marke, Tonalität, Angebot)
-2. Lies context/strategy.md (aktuelle Prioritäten)
+Thema: {thema}
+Datum: {datum}
+Plattform: Instagram / Facebook
 
-Post-Details:
-- Thema: {thema}
-- Datum: {datum}
-- Plattform: Instagram / Facebook
-
-Format:
-- Haupttext (max. 150 Wörter)
-- Hashtags (8-12, themenrelevant)
-- Optional: Story-Idee oder Call-to-Action
-
-Speichere als outputs/social-post-{datum}.md
+Liefere:
+1. Post-Text (max. 150 Wörter)
+2. Hashtags (8-10)
+3. Optional: Story-Idee
 """
 
 _WEEKLY_TASK = """
-Erstelle den Social-Media-Wochen-Plan für das Padella Vino.
+Erstelle den Social-Media-Wochen-Plan für KW {kw}.
 
-1. Lies context/business-info.md und context/strategy.md
-2. Berücksichtige: aktuelle Jahreszeit, Wochentag-Logik (Mo=motivierend, Fr=TGIF, So=gemütlich)
-3. Plane 3-4 Posts für KW {kw}
+Plane 3-4 Posts für die Woche:
+- Berücksichtige Wochentag-Logik (Mo=Start der Woche, Fr=Wochenende einläuten, So=gemütlich)
+- Aktuelle Jahreszeit
+- Abwechslung in Themen und Formaten
 
 Format pro Post:
-- Tag + Uhrzeit
-- Thema und Headline
-- Post-Text (ready to copy)
-- Hashtags
-- Story-Idee (optional)
-
-Speichere als outputs/social-plan-KW{kw}.md
+**Tag, Uhrzeit**
+Thema: [Thema]
+Text: [Fertiger Post-Text]
+Hashtags: [Liste]
 """
 
 
 class SocialAgent(SpecialistAgent):
     name = "social"
     description = "Erstellt Social-Media-Posts und Wochenpläne"
-    model = "sonnet"
-    max_turns = 15
-    max_budget_usd = 1.50
     system_append = _SYSTEM
 
-    async def run(self, task: str | None = None) -> AgentResult:
+    def run(self, task: str | None = None) -> AgentResult:
         if task is None:
             today = datetime.now().strftime("%Y-%m-%d")
             task = _POST_TASK.format(thema="Tagesaktuell", datum=today)
-        return await super().run(task)
+        return super().run(task)
 
-    async def run_scheduled_task(self) -> AgentResult:
+    def run_scheduled_task(self) -> AgentResult:
         kw = date.today().isocalendar()[1]
-        return await super().run(_WEEKLY_TASK.format(kw=kw))
+        result = super().run(_WEEKLY_TASK.format(kw=kw))
 
-    async def create_post(self, thema: str) -> AgentResult:
+        if not result.is_error and result.text:
+            path = _save_output(f"social-plan-KW{kw}.md", result.text)
+            result.output_files = [str(path.relative_to(Path(__file__).parent.parent))]
+
+        return result
+
+    def create_post(self, thema: str) -> AgentResult:
         today = datetime.now().strftime("%Y-%m-%d")
-        return await super().run(_POST_TASK.format(thema=thema, datum=today))
+        return super().run(_POST_TASK.format(thema=thema, datum=today))
