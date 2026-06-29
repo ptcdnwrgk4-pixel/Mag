@@ -1,0 +1,1209 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Flaconella – Handgefertigte Deko aus recycelten Flaschen</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:wght@300;400;500;600&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Montserrat',sans-serif;background:#0d0d0d;color:#f0e8d0;overflow-x:hidden;}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:200;
+  background:rgba(13,13,13,0.96);backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(138,128,96,0.18);
+  padding:0 60px;display:flex;align-items:center;justify-content:space-between;height:70px;
+}
+.nav-logo{font-family:'Cormorant Garamond',serif;font-size:22px;font-weight:500;letter-spacing:4px;color:#f0e8d0;text-decoration:none;}
+.nav-logo span{color:#c4a96a;}
+.nav-links{display:flex;gap:36px;}
+.nav-links a{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(240,232,208,0.45);text-decoration:none;transition:color 0.2s;font-weight:600;}
+.nav-links a:hover{color:#c4a96a;}
+.nav-right{display:flex;align-items:center;gap:24px;}
+.nav-cart{background:none;border:none;cursor:pointer;display:flex;align-items:center;gap:8px;color:rgba(240,232,208,0.6);font-family:'Montserrat',sans-serif;font-size:9px;letter-spacing:2px;text-transform:uppercase;font-weight:600;transition:color 0.2s;position:relative;}
+.nav-cart:hover{color:#c4a96a;}
+.cart-badge{position:absolute;top:-6px;right:-10px;background:#c4a96a;color:#0d0d0d;font-size:9px;font-weight:700;width:18px;height:18px;border-radius:50%;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity 0.2s;}
+.cart-badge.visible{opacity:1;}
+.nav-cta{background:#8a8060;color:#fff;padding:10px 24px;font-size:9px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;font-weight:600;transition:background 0.2s;}
+.nav-cta:hover{background:#c4a96a;}
+.nav-hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;}
+.nav-hamburger span{width:22px;height:1px;background:#f0e8d0;transition:all 0.3s;}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;background:#0d0d0d;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  text-align:center;padding:120px 60px 80px;position:relative;overflow:hidden;
+}
+.hero::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 55%,rgba(138,128,96,0.07) 0%,transparent 65%);}
+.hero-tag{font-size:9px;letter-spacing:5px;text-transform:uppercase;color:#8a8060;margin-bottom:28px;font-weight:600;}
+.hero-logo{font-family:'Cormorant Garamond',serif;font-size:80px;font-weight:300;letter-spacing:16px;color:#fff;line-height:1;margin-bottom:8px;position:relative;}
+.hero-logo span{color:#c4a96a;}
+.hero-subtitle{font-family:'Cormorant Garamond',serif;font-size:18px;font-weight:300;font-style:italic;color:rgba(240,232,208,0.4);letter-spacing:2px;margin-bottom:40px;}
+.hero-line{width:1px;height:50px;background:linear-gradient(to bottom,transparent,#8a8060,transparent);margin:0 auto 40px;}
+.hero h1{font-family:'Playfair Display',serif;font-size:54px;font-weight:400;color:#fff;line-height:1.1;margin-bottom:14px;position:relative;max-width:700px;}
+.hero h1 em{font-style:italic;color:#c4a96a;}
+.hero-desc{font-size:13px;letter-spacing:1.5px;color:rgba(240,232,208,0.4);margin-bottom:48px;font-weight:300;max-width:500px;line-height:1.8;}
+.hero-btns{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;}
+.btn-primary{background:#8a8060;color:#fff;padding:16px 44px;font-size:9px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;font-weight:600;transition:background 0.2s;cursor:pointer;border:none;font-family:'Montserrat',sans-serif;}
+.btn-primary:hover{background:#c4a96a;}
+.btn-secondary{border:1px solid rgba(240,232,208,0.2);color:rgba(240,232,208,0.55);padding:16px 44px;font-size:9px;letter-spacing:3px;text-transform:uppercase;text-decoration:none;font-weight:600;transition:all 0.2s;cursor:pointer;background:none;font-family:'Montserrat',sans-serif;}
+.btn-secondary:hover{border-color:#8a8060;color:#c4a96a;}
+.hero-scroll{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:8px;}
+.hero-scroll span{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:rgba(240,232,208,0.2);}
+.scroll-line{width:1px;height:36px;background:linear-gradient(to bottom,#8a8060,transparent);}
+.hero-deco{position:absolute;opacity:0.03;font-size:300px;font-family:'Cormorant Garamond',serif;color:#c4a96a;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;white-space:nowrap;}
+
+/* ── SECTION COMMONS ── */
+section{padding:100px 60px;}
+.section-tag{font-size:9px;letter-spacing:5px;text-transform:uppercase;color:#8a8060;margin-bottom:14px;font-weight:600;display:block;}
+.section-rule{width:40px;height:1px;background:#8a8060;margin-bottom:20px;}
+.section-title{font-family:'Playfair Display',serif;font-size:42px;font-weight:400;color:#fff;line-height:1.1;margin-bottom:14px;}
+.section-title em{font-style:italic;color:#c4a96a;}
+
+/* ── HIGHLIGHTS ── */
+.highlights{background:#111;padding:60px;}
+.highlights-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:#1a1a1a;}
+.highlight-item{background:#111;padding:48px 36px;display:flex;align-items:flex-start;gap:24px;}
+.highlight-icon{font-size:28px;flex-shrink:0;margin-top:4px;}
+.highlight-text h3{font-family:'Playfair Display',serif;font-size:17px;font-weight:400;color:#fff;margin-bottom:8px;}
+.highlight-text p{font-size:12px;color:rgba(240,232,208,0.4);line-height:1.7;font-weight:300;}
+
+/* ── SHOP ── */
+.shop{background:#0d0d0d;}
+.shop-header{text-align:center;margin-bottom:60px;}
+.shop-header h2{font-family:'Playfair Display',serif;font-size:48px;font-weight:400;color:#fff;margin-bottom:10px;}
+.shop-header p{font-size:12px;color:rgba(240,232,208,0.35);letter-spacing:2px;font-weight:300;}
+.shop-filters{display:flex;gap:2px;margin-bottom:48px;flex-wrap:wrap;}
+.filter-btn{background:none;border:1px solid rgba(240,232,208,0.1);color:rgba(240,232,208,0.4);padding:10px 22px;font-size:8px;letter-spacing:3px;text-transform:uppercase;font-weight:600;cursor:pointer;transition:all 0.2s;font-family:'Montserrat',sans-serif;}
+.filter-btn:hover,.filter-btn.active{background:#8a8060;border-color:#8a8060;color:#fff;}
+.shop-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;}
+.product-card{background:#111;position:relative;overflow:hidden;cursor:pointer;transition:transform 0.3s;}
+.product-card:hover{transform:translateY(-2px);}
+.product-card:hover .product-overlay{opacity:1;}
+.product-img{width:100%;height:300px;background:#161616;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+.product-img svg{transition:transform 0.4s;}
+.product-card:hover .product-img svg{transform:scale(1.05);}
+.product-overlay{position:absolute;inset:0;background:rgba(13,13,13,0.88);opacity:0;transition:opacity 0.3s;display:flex;align-items:center;justify-content:center;gap:12px;flex-direction:column;}
+.overlay-btn{border:1px solid rgba(196,169,106,0.5);color:#c4a96a;padding:11px 28px;font-size:8px;letter-spacing:3px;text-transform:uppercase;font-weight:600;cursor:pointer;background:none;font-family:'Montserrat',sans-serif;transition:all 0.2s;}
+.overlay-btn:hover{background:#c4a96a;color:#0d0d0d;border-color:#c4a96a;}
+.overlay-btn.cart-direct{background:#8a8060;border-color:#8a8060;color:#fff;}
+.overlay-btn.cart-direct:hover{background:#c4a96a;border-color:#c4a96a;}
+.product-info{padding:22px;border-top:1px solid #1a1a1a;}
+.product-cat{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:#8a8060;margin-bottom:6px;display:block;font-weight:600;}
+.product-name{font-family:'Playfair Display',serif;font-size:17px;color:#fff;margin-bottom:4px;}
+.product-price{font-size:13px;color:rgba(240,232,208,0.4);font-weight:300;}
+.product-badge{position:absolute;top:14px;left:14px;background:#8a8060;color:#fff;font-size:7px;letter-spacing:2px;text-transform:uppercase;padding:5px 10px;font-weight:700;}
+.product-badge.custom{background:#c4a96a;}
+.product-card.hidden{display:none;}
+
+/* ── STORY ── */
+.story{background:#111;}
+.story-grid{display:grid;grid-template-columns:1fr 1fr;gap:100px;align-items:center;}
+.story-text .section-tag{display:block;}
+.story-text h2{font-family:'Playfair Display',serif;font-size:44px;font-weight:400;color:#fff;line-height:1.1;margin-bottom:24px;}
+.story-text h2 em{font-style:italic;color:#c4a96a;}
+.story-text p{font-size:14px;color:rgba(240,232,208,0.5);line-height:1.9;font-weight:300;margin-bottom:18px;}
+.story-link{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#8a8060;text-decoration:none;font-weight:600;border-bottom:1px solid rgba(138,128,96,0.3);padding-bottom:3px;display:inline-block;margin-top:8px;}
+.story-link:hover{color:#c4a96a;border-color:#c4a96a;}
+.story-visual{display:flex;flex-direction:column;gap:2px;}
+.story-img-main{width:100%;height:280px;background:#161616;display:flex;align-items:center;justify-content:center;}
+.story-img-row{display:grid;grid-template-columns:1fr 1fr;gap:2px;}
+.story-img-small{height:140px;background:#1a1a1a;display:flex;align-items:center;justify-content:center;}
+.story-img-main svg,.story-img-small svg{opacity:0.25;}
+.img-caption{font-size:8px;letter-spacing:2px;text-transform:uppercase;color:rgba(240,232,208,0.12);}
+
+/* ── PROCESS ── */
+.process{background:#0d0d0d;}
+.process-header{text-align:center;margin-bottom:64px;}
+.process-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#1a1a1a;}
+.step{background:#0d0d0d;padding:48px 32px;text-align:center;}
+.step-num{font-family:'Cormorant Garamond',serif;font-size:64px;font-weight:300;color:rgba(196,169,106,0.15);line-height:1;margin-bottom:16px;}
+.step h3{font-family:'Playfair Display',serif;font-size:16px;font-weight:400;color:#fff;margin-bottom:10px;}
+.step p{font-size:12px;color:rgba(240,232,208,0.4);line-height:1.7;font-weight:300;}
+
+/* ── CUSTOM ── */
+.custom{background:#111;}
+.custom-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;}
+.custom-text h2{font-family:'Playfair Display',serif;font-size:44px;font-weight:400;color:#fff;line-height:1.1;margin-bottom:20px;}
+.custom-text h2 em{font-style:italic;color:#c4a96a;}
+.custom-text p{font-size:14px;color:rgba(240,232,208,0.5);line-height:1.9;font-weight:300;margin-bottom:16px;}
+.custom-options{display:flex;flex-direction:column;gap:16px;margin:32px 0;}
+.custom-option{display:flex;align-items:center;gap:16px;padding:20px;background:#0d0d0d;border:1px solid rgba(240,232,208,0.06);}
+.custom-option-icon{font-size:22px;flex-shrink:0;}
+.custom-option h4{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#c4a96a;margin-bottom:4px;font-weight:600;}
+.custom-option p{font-size:12px;color:rgba(240,232,208,0.4);font-weight:300;line-height:1.5;}
+.custom-visual{background:#0d0d0d;padding:60px;display:flex;align-items:center;justify-content:center;min-height:400px;}
+.custom-badge-display{text-align:center;}
+.custom-badge-display .big-icon{font-size:100px;display:block;margin-bottom:24px;}
+.custom-badge-display p{font-size:10px;letter-spacing:3px;text-transform:uppercase;color:rgba(240,232,208,0.2);font-weight:600;}
+
+/* ── NUMBERS ── */
+.numbers{background:#111;padding:80px 60px;}
+.numbers-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1px;background:#1a1a1a;}
+.number-item{background:#111;padding:48px 36px;text-align:center;}
+.number-val{font-family:'Cormorant Garamond',serif;font-size:52px;font-weight:300;color:#c4a96a;line-height:1;margin-bottom:8px;}
+.number-label{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:rgba(240,232,208,0.3);font-weight:600;}
+
+/* ── TESTIMONIALS ── */
+.testimonials{background:#0d0d0d;padding:80px 60px;}
+.testimonials-header{text-align:center;margin-bottom:56px;}
+.testimonials-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;}
+.testimonial{background:#111;padding:40px;border-top:1px solid rgba(196,169,106,0.2);}
+.testimonial-stars{color:#c4a96a;font-size:13px;letter-spacing:3px;margin-bottom:20px;}
+.testimonial blockquote{font-family:'Cormorant Garamond',serif;font-size:17px;font-style:italic;color:rgba(240,232,208,0.7);line-height:1.6;margin-bottom:20px;font-weight:300;}
+.testimonial-author{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#8a8060;font-weight:600;}
+
+/* ── CONTACT ── */
+.contact{background:#111;}
+.contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;}
+.contact-info h2{font-family:'Playfair Display',serif;font-size:40px;font-weight:400;color:#fff;line-height:1.1;margin-bottom:20px;}
+.contact-info h2 em{font-style:italic;color:#c4a96a;}
+.contact-info p{font-size:13px;color:rgba(240,232,208,0.45);line-height:1.8;font-weight:300;margin-bottom:32px;}
+.contact-details{display:flex;flex-direction:column;gap:20px;}
+.contact-detail{display:flex;gap:16px;align-items:flex-start;}
+.cd-icon{font-size:18px;flex-shrink:0;margin-top:2px;}
+.cd-label{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:#8a8060;font-weight:600;margin-bottom:4px;}
+.cd-value{font-size:13px;color:rgba(240,232,208,0.6);font-weight:300;}
+.contact-form{display:flex;flex-direction:column;gap:16px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.form-group{display:flex;flex-direction:column;gap:8px;}
+.form-group label{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:#8a8060;font-weight:600;}
+.form-group input,.form-group textarea,.form-group select{background:#0d0d0d;border:1px solid rgba(240,232,208,0.1);color:#f0e8d0;padding:14px 16px;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:300;outline:none;transition:border-color 0.2s;width:100%;}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:#8a8060;}
+.form-group textarea{resize:vertical;min-height:120px;}
+.form-group select option{background:#0d0d0d;}
+.form-submit{background:#8a8060;color:#fff;padding:16px;font-size:9px;letter-spacing:3px;text-transform:uppercase;font-weight:600;cursor:pointer;border:none;font-family:'Montserrat',sans-serif;transition:background 0.2s;width:100%;}
+.form-submit:hover{background:#c4a96a;}
+
+/* ── FOOTER ── */
+footer{background:#0a0a0a;border-top:1px solid rgba(138,128,96,0.12);padding:60px;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:60px;}
+.footer-brand{display:flex;flex-direction:column;gap:16px;}
+.footer-logo{font-family:'Cormorant Garamond',serif;font-size:24px;font-weight:500;letter-spacing:5px;color:#f0e8d0;}
+.footer-logo span{color:#c4a96a;}
+.footer-tagline{font-size:12px;color:rgba(240,232,208,0.3);line-height:1.7;font-weight:300;max-width:220px;}
+.footer-social{display:flex;gap:12px;margin-top:8px;}
+.social-icon{width:36px;height:36px;border:1px solid rgba(240,232,208,0.1);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;transition:border-color 0.2s,color 0.2s;text-decoration:none;color:rgba(240,232,208,0.4);}
+.social-icon:hover{border-color:#c4a96a;color:#c4a96a;}
+.footer-col h4{font-size:9px;letter-spacing:4px;text-transform:uppercase;color:#8a8060;font-weight:600;margin-bottom:20px;}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:11px;}
+.footer-col ul li a{font-size:12px;color:rgba(240,232,208,0.35);text-decoration:none;font-weight:300;transition:color 0.2s;}
+.footer-col ul li a:hover{color:#c4a96a;}
+.footer-bottom{background:#0a0a0a;border-top:1px solid rgba(138,128,96,0.08);padding:20px 60px;display:flex;justify-content:space-between;align-items:center;}
+.footer-bottom p{font-size:10px;color:rgba(240,232,208,0.2);letter-spacing:1px;font-weight:300;}
+.footer-bottom a{color:rgba(240,232,208,0.2);text-decoration:none;}
+.footer-bottom a:hover{color:#c4a96a;}
+
+/* ── CART SIDEBAR ── */
+.cart-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:300;opacity:0;pointer-events:none;transition:opacity 0.3s;backdrop-filter:blur(4px);}
+.cart-overlay.open{opacity:1;pointer-events:all;}
+.cart-sidebar{position:fixed;top:0;right:0;bottom:0;width:420px;background:#111;z-index:301;transform:translateX(100%);transition:transform 0.35s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;border-left:1px solid rgba(138,128,96,0.15);}
+.cart-sidebar.open{transform:translateX(0);}
+.cart-header{padding:28px 32px;border-bottom:1px solid rgba(240,232,208,0.08);display:flex;justify-content:space-between;align-items:center;}
+.cart-header h3{font-family:'Playfair Display',serif;font-size:20px;font-weight:400;color:#fff;}
+.cart-close{background:none;border:none;cursor:pointer;color:rgba(240,232,208,0.4);font-size:20px;transition:color 0.2s;line-height:1;}
+.cart-close:hover{color:#c4a96a;}
+.cart-items{flex:1;overflow-y:auto;padding:24px 32px;display:flex;flex-direction:column;gap:20px;}
+.cart-empty{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:16px;}
+.cart-empty-icon{font-size:48px;opacity:0.15;}
+.cart-empty p{font-size:12px;color:rgba(240,232,208,0.3);letter-spacing:2px;text-transform:uppercase;font-weight:600;}
+.cart-item{display:flex;gap:16px;align-items:flex-start;padding-bottom:20px;border-bottom:1px solid rgba(240,232,208,0.06);}
+.cart-item-img{width:70px;height:70px;background:#0d0d0d;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:28px;}
+.cart-item-info{flex:1;}
+.cart-item-name{font-family:'Playfair Display',serif;font-size:14px;color:#fff;margin-bottom:4px;}
+.cart-item-variant{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:#8a8060;margin-bottom:8px;font-weight:600;}
+.cart-item-engraving{font-size:10px;color:rgba(240,232,208,0.35);font-style:italic;margin-bottom:8px;}
+.cart-item-price{font-size:13px;color:#c4a96a;font-weight:300;}
+.cart-item-qty{display:flex;align-items:center;gap:10px;margin-top:10px;}
+.qty-btn{width:24px;height:24px;border:1px solid rgba(240,232,208,0.15);background:none;color:rgba(240,232,208,0.6);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+.qty-btn:hover{border-color:#8a8060;color:#c4a96a;}
+.qty-num{font-size:12px;color:#f0e8d0;min-width:20px;text-align:center;}
+.cart-item-remove{background:none;border:none;cursor:pointer;color:rgba(240,232,208,0.2);font-size:16px;padding:2px;transition:color 0.2s;align-self:center;margin-left:auto;}
+.cart-item-remove:hover{color:#c4a96a;}
+.cart-footer{padding:24px 32px;border-top:1px solid rgba(240,232,208,0.08);}
+.cart-subtotal{display:flex;justify-content:space-between;margin-bottom:8px;}
+.cart-subtotal span{font-size:11px;color:rgba(240,232,208,0.4);letter-spacing:2px;text-transform:uppercase;font-weight:600;}
+.cart-subtotal strong{font-family:'Cormorant Garamond',serif;font-size:20px;color:#c4a96a;font-weight:400;}
+.cart-note{font-size:10px;color:rgba(240,232,208,0.2);margin-bottom:20px;line-height:1.6;}
+.cart-checkout-btn{background:#8a8060;color:#fff;width:100%;padding:16px;font-size:9px;letter-spacing:3px;text-transform:uppercase;font-weight:600;cursor:pointer;border:none;font-family:'Montserrat',sans-serif;transition:background 0.2s;}
+.cart-checkout-btn:hover{background:#c4a96a;}
+.cart-checkout-btn:disabled{opacity:0.4;cursor:not-allowed;}
+
+/* ── PRODUCT MODAL ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.8);z-index:400;opacity:0;pointer-events:none;transition:opacity 0.3s;backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:40px;}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal{background:#111;max-width:860px;width:100%;max-height:90vh;overflow-y:auto;position:relative;border:1px solid rgba(138,128,96,0.12);}
+.modal-close{position:absolute;top:20px;right:20px;background:none;border:none;cursor:pointer;color:rgba(240,232,208,0.4);font-size:22px;z-index:1;transition:color 0.2s;line-height:1;}
+.modal-close:hover{color:#c4a96a;}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;}
+.modal-img{background:#0d0d0d;display:flex;align-items:center;justify-content:center;min-height:400px;}
+.modal-info{padding:48px 40px;display:flex;flex-direction:column;}
+.modal-cat{font-size:8px;letter-spacing:4px;text-transform:uppercase;color:#8a8060;margin-bottom:12px;font-weight:600;}
+.modal-name{font-family:'Playfair Display',serif;font-size:28px;font-weight:400;color:#fff;line-height:1.15;margin-bottom:6px;}
+.modal-tagline{font-size:12px;color:rgba(240,232,208,0.35);font-style:italic;margin-bottom:20px;font-weight:300;}
+.modal-price{font-family:'Cormorant Garamond',serif;font-size:32px;color:#c4a96a;font-weight:300;margin-bottom:24px;}
+.modal-desc{font-size:13px;color:rgba(240,232,208,0.5);line-height:1.8;font-weight:300;margin-bottom:28px;}
+.modal-divider{width:40px;height:1px;background:#8a8060;margin-bottom:24px;}
+.modal-option-label{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:#8a8060;font-weight:600;margin-bottom:10px;}
+.variant-selector{display:flex;flex-direction:column;gap:8px;margin-bottom:20px;}
+.variant-option{display:flex;align-items:center;gap:10px;padding:12px 16px;background:#0d0d0d;border:1px solid rgba(240,232,208,0.08);cursor:pointer;transition:all 0.2s;}
+.variant-option:hover,.variant-option.selected{border-color:#8a8060;}
+.variant-option input[type=radio]{accent-color:#c4a96a;}
+.variant-option-name{font-size:12px;color:rgba(240,232,208,0.7);flex:1;}
+.variant-option-price{font-size:12px;color:#c4a96a;font-weight:300;}
+.engraving-field{display:flex;flex-direction:column;gap:8px;margin-bottom:24px;}
+.engraving-field input{background:#0d0d0d;border:1px solid rgba(240,232,208,0.1);color:#f0e8d0;padding:12px 14px;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:300;outline:none;transition:border-color 0.2s;}
+.engraving-field input:focus{border-color:#8a8060;}
+.engraving-field input::placeholder{color:rgba(240,232,208,0.2);}
+.modal-add-btn{background:#8a8060;color:#fff;width:100%;padding:16px;font-size:9px;letter-spacing:3px;text-transform:uppercase;font-weight:600;cursor:pointer;border:none;font-family:'Montserrat',sans-serif;transition:background 0.2s;margin-top:auto;}
+.modal-add-btn:hover{background:#c4a96a;}
+
+/* ── CHECKOUT MODAL ── */
+.checkout-modal{background:#111;max-width:640px;width:100%;position:relative;border:1px solid rgba(138,128,96,0.12);max-height:90vh;overflow-y:auto;}
+.checkout-header{padding:32px 40px;border-bottom:1px solid rgba(240,232,208,0.08);}
+.checkout-header h3{font-family:'Playfair Display',serif;font-size:26px;font-weight:400;color:#fff;}
+.checkout-header p{font-size:12px;color:rgba(240,232,208,0.3);font-weight:300;margin-top:4px;}
+.checkout-body{padding:36px 40px;display:flex;flex-direction:column;gap:20px;}
+.checkout-section-title{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#8a8060;font-weight:600;margin-bottom:4px;}
+.checkout-order-summary{background:#0d0d0d;padding:20px;margin-bottom:4px;}
+.checkout-order-line{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(240,232,208,0.05);font-size:12px;}
+.checkout-order-line:last-child{border-bottom:none;font-weight:600;color:#c4a96a;padding-top:12px;}
+.checkout-total{display:flex;justify-content:space-between;padding:16px 0 0;font-size:14px;color:#fff;}
+.checkout-total strong{font-family:'Cormorant Garamond',serif;font-size:22px;color:#c4a96a;}
+.checkout-payment-info{background:#0d0d0d;padding:20px;border-left:2px solid #8a8060;}
+.checkout-payment-info h4{font-size:9px;letter-spacing:3px;text-transform:uppercase;color:#c4a96a;font-weight:600;margin-bottom:12px;}
+.checkout-payment-info p{font-size:12px;color:rgba(240,232,208,0.5);line-height:1.7;font-weight:300;}
+.checkout-payment-info strong{color:#f0e8d0;}
+.checkout-submit{background:#8a8060;color:#fff;width:100%;padding:18px;font-size:9px;letter-spacing:3px;text-transform:uppercase;font-weight:600;cursor:pointer;border:none;font-family:'Montserrat',sans-serif;transition:background 0.2s;}
+.checkout-submit:hover{background:#c4a96a;}
+.checkout-note{font-size:10px;color:rgba(240,232,208,0.2);text-align:center;line-height:1.6;}
+
+/* ── SUCCESS MODAL ── */
+.success-modal{background:#111;max-width:480px;width:100%;padding:60px 48px;text-align:center;border:1px solid rgba(138,128,96,0.15);position:relative;}
+.success-icon{font-size:56px;margin-bottom:24px;}
+.success-modal h3{font-family:'Playfair Display',serif;font-size:28px;font-weight:400;color:#fff;margin-bottom:12px;}
+.success-modal p{font-size:13px;color:rgba(240,232,208,0.45);line-height:1.7;font-weight:300;margin-bottom:32px;}
+.success-modal .btn-primary{display:inline-block;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:40px;left:50%;transform:translateX(-50%) translateY(20px);background:#1a1a1a;border:1px solid rgba(196,169,106,0.3);color:#f0e8d0;padding:14px 28px;font-size:11px;letter-spacing:2px;text-transform:uppercase;font-weight:600;z-index:500;opacity:0;transition:all 0.3s;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0);}
+.toast span{color:#c4a96a;margin-right:8px;}
+
+/* ── MOBILE ── */
+@media(max-width:900px){
+  nav{padding:0 24px;}
+  .nav-links{display:none;}
+  .nav-hamburger{display:flex;}
+  section{padding:70px 24px;}
+  .hero{padding:100px 24px 70px;}
+  .hero-logo{font-size:52px;letter-spacing:10px;}
+  .hero h1{font-size:36px;}
+  .highlights-grid,.shop-grid,.testimonials-grid{grid-template-columns:1fr;}
+  .story-grid,.custom-grid,.contact-grid{grid-template-columns:1fr;gap:48px;}
+  .process-steps{grid-template-columns:1fr 1fr;}
+  .numbers-grid{grid-template-columns:1fr 1fr;}
+  footer{grid-template-columns:1fr 1fr;gap:40px;padding:48px 24px;}
+  .footer-bottom{padding:16px 24px;flex-direction:column;gap:8px;text-align:center;}
+  .cart-sidebar{width:100%;}
+  .modal-grid{grid-template-columns:1fr;}
+  .modal-img{min-height:240px;}
+  highlights,.numbers,.testimonials,.process{padding:60px 24px;}
+}
+@media(max-width:600px){
+  .process-steps{grid-template-columns:1fr;}
+  .numbers-grid{grid-template-columns:1fr 1fr;}
+  footer{grid-template-columns:1fr;}
+  .form-row{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">FLACON<span>ELLA</span></a>
+  <div class="nav-links">
+    <a href="#shop">Shop</a>
+    <a href="#story">Unsere Story</a>
+    <a href="#individual">Individuell</a>
+    <a href="#kontakt">Kontakt</a>
+  </div>
+  <div class="nav-right">
+    <button class="nav-cart" onclick="openCart()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      Warenkorb
+      <span class="cart-badge" id="cartBadge">0</span>
+    </button>
+    <a href="#individual" class="nav-cta">Gravur anfragen</a>
+    <button class="nav-hamburger" onclick="toggleMobileMenu()">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-deco">◈</div>
+  <span class="hero-tag">Padella Vino · Dieburg · Handgemacht</span>
+  <div class="hero-logo">FLACON<span>ELLA</span></div>
+  <div class="hero-subtitle">Jede Flasche hat eine Geschichte. Wir geben ihr eine zweite.</div>
+  <div class="hero-line"></div>
+  <h1>Wohn&shy;deko aus<br><em>recycelten</em> Flaschen</h1>
+  <p class="hero-desc">Windlichter, Lampen, Kerzenhalter und Vasen – handgefertigt aus Wein- und Spirituosenflaschen unseres Cafés. Mit Gravur nach Wunsch.</p>
+  <div class="hero-btns">
+    <a href="#shop" class="btn-primary">Jetzt entdecken</a>
+    <a href="#story" class="btn-secondary">Unsere Story</a>
+  </div>
+  <div class="hero-scroll">
+    <span>Scroll</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- HIGHLIGHTS -->
+<div class="highlights">
+  <div class="highlights-grid">
+    <div class="highlight-item">
+      <div class="highlight-icon">♻️</div>
+      <div class="highlight-text">
+        <h3>100 % recycelt</h3>
+        <p>Jede Flasche kam zuerst als Wein oder Grappa auf unseren Tisch – dann wird sie zu Deko, die bleibt.</p>
+      </div>
+    </div>
+    <div class="highlight-item">
+      <div class="highlight-icon">✋</div>
+      <div class="highlight-text">
+        <h3>Handarbeit</h3>
+        <p>Geschnitten, geschliffen, graviert von Hand. Keine Massenware. Jedes Stück ein Einzelstück.</p>
+      </div>
+    </div>
+    <div class="highlight-item">
+      <div class="highlight-icon">✍️</div>
+      <div class="highlight-text">
+        <h3>Wunschgravur</h3>
+        <p>Namen, Datum, Koordinaten, ein Zitat – wir gravieren, was dir wichtig ist. Auf Anfrage.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SHOP -->
+<section class="shop" id="shop">
+  <div class="shop-header">
+    <span class="section-tag">Kollektion 2026</span>
+    <h2>Der Shop</h2>
+    <p>Handgefertigt · Limitiert · Jedes Stück ein Original</p>
+  </div>
+  <div class="shop-filters">
+    <button class="filter-btn active" data-filter="all" onclick="filterProducts('all',this)">Alle</button>
+    <button class="filter-btn" data-filter="windlicht" onclick="filterProducts('windlicht',this)">Windlichter</button>
+    <button class="filter-btn" data-filter="kerzenhalter" onclick="filterProducts('kerzenhalter',this)">Kerzenhalter</button>
+    <button class="filter-btn" data-filter="lampe" onclick="filterProducts('lampe',this)">Lampen</button>
+    <button class="filter-btn" data-filter="dekoflasche" onclick="filterProducts('dekoflasche',this)">Dekoflaschen</button>
+    <button class="filter-btn" data-filter="kerzenumhuellung" onclick="filterProducts('kerzenumhuellung',this)">Kerzenumhüllungen</button>
+    <button class="filter-btn" data-filter="sonderlinie" onclick="filterProducts('sonderlinie',this)">Personalisiert</button>
+  </div>
+  <div class="shop-grid" id="shopGrid"></div>
+</section>
+
+<!-- STORY -->
+<section class="story" id="story">
+  <div class="story-grid">
+    <div class="story-text">
+      <span class="section-tag">Unsere Geschichte</span>
+      <div class="section-rule"></div>
+      <h2>Vom Tisch ins<br><em>Wohnzimmer</em></h2>
+      <p>Im Padella Vino am Marktplatz Dieburg öffnen wir täglich Hunderte Flaschen – Barolo, Amarone, Grappa, Prosecco. Jede dieser Flaschen trägt eine Geschichte: einen Abend, ein Gespräch, einen besonderen Moment.</p>
+      <p>Statt die Flaschen wegzuwerfen, haben wir angefangen, sie zu verwandeln. Mit einer Glasschneidemaschine, einem Schleifer und einer Graviernadel entstehen daraus Objekte, die lange bleiben.</p>
+      <p>Flaconella ist kein Industrieprodukt. Es ist ein Nebenprodukt echter Gastfreundschaft.</p>
+      <a href="#individual" class="story-link">Mehr erfahren →</a>
+    </div>
+    <div class="story-visual">
+      <div class="story-img-main">
+        <svg width="100" height="160" viewBox="0 0 100 160">
+          <path d="M38 10 L38 40 C20 55 15 75 15 100 C15 130 28 150 50 150 C72 150 85 130 85 100 C85 75 80 55 62 40 L62 10 Z" fill="none" stroke="#c4a96a" stroke-width="1.5" opacity="0.6"/>
+          <rect x="35" y="5" width="30" height="8" rx="2" fill="none" stroke="#c4a96a" stroke-width="1" opacity="0.4"/>
+          <line x1="15" y1="80" x2="85" y2="80" stroke="#c4a96a" stroke-width="0.5" opacity="0.3"/>
+        </svg>
+      </div>
+      <div class="story-img-row">
+        <div class="story-img-small"><span class="img-caption">Werkstatt</span></div>
+        <div class="story-img-small"><span class="img-caption">Gravur</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="process" id="process">
+  <div class="process-header">
+    <span class="section-tag">Handwerk</span>
+    <div class="section-rule" style="margin:0 auto 20px;"></div>
+    <h2 class="section-title" style="text-align:center;">So entsteht<br><em>eine Flaconella</em></h2>
+  </div>
+  <div class="process-steps">
+    <div class="step">
+      <div class="step-num">01</div>
+      <h3>Die Flasche</h3>
+      <p>Leere Flaschen aus dem Padella Vino – gereinigt, aussortiert, auf Risse geprüft. Nur die besten werden weiterverarbeitet.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <h3>Der Schnitt</h3>
+      <p>Präziser Schnitt mit der Glasschneidemaschine. Je nach Produkt wird die Flasche geteilt, der Boden abgetrennt oder der Hals geformt.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <h3>Der Schliff</h3>
+      <p>Jede Schnittkante wird von Hand geschliffen – glatt, sicher, sauber. Das Stück prüfen wir dreimal auf Schärfen und Risse.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">04</div>
+      <h3>Die Gravur</h3>
+      <p>Optional: Motiv oder Text per Graviernadel eingearbeitet. Präzise, dauerhaft, einzigartig – auf Wunsch auch dein Text.</p>
+    </div>
+  </div>
+</section>
+
+<!-- INDIVIDUELL -->
+<section class="custom" id="individual">
+  <div class="custom-grid">
+    <div class="custom-text">
+      <span class="section-tag">Wunschgravur</span>
+      <div class="section-rule"></div>
+      <h2>Dein Name.<br><em>Dein Datum.</em><br>Deine Flasche.</h2>
+      <p>Jedes Flaconella-Produkt lässt sich individualisieren. Namen, Daten, Koordinaten, Zitate, Firmennamen – wir gravieren, was du dir wünschst.</p>
+      <div class="custom-options">
+        <div class="custom-option">
+          <div class="custom-option-icon">💍</div>
+          <div>
+            <h4>Hochzeiten</h4>
+            <p>Personalisierte Tischdeko oder Gastgeschenke ab 10 Stück. Ab 20 € / Stück.</p>
+          </div>
+        </div>
+        <div class="custom-option">
+          <div class="custom-option-icon">🏨</div>
+          <div>
+            <h4>Gastronomie & Hotels</h4>
+            <p>Raumdeko, Tischdeko, Gastgeschenke mit Firmenlogo oder Slogan. Auf Anfrage.</p>
+          </div>
+        </div>
+        <div class="custom-option">
+          <div class="custom-option-icon">🎁</div>
+          <div>
+            <h4>Geschenke</h4>
+            <p>Ein persönliches Einzelstück – Geburtstag, Jubiläum, Abschied. Mit Wunschtext.</p>
+          </div>
+        </div>
+      </div>
+      <a href="#kontakt" class="btn-primary" style="display:inline-block;text-decoration:none;">Anfrage stellen</a>
+    </div>
+    <div class="custom-visual">
+      <div class="custom-badge-display">
+        <span class="big-icon">🍾</span>
+        <p>Individuell · Nachhaltig · Unvergesslich</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- NUMBERS -->
+<div class="numbers">
+  <div class="numbers-grid">
+    <div class="number-item">
+      <div class="number-val">100%</div>
+      <div class="number-label">Recycelte Materialien</div>
+    </div>
+    <div class="number-item">
+      <div class="number-val">5</div>
+      <div class="number-label">Produktlinien</div>
+    </div>
+    <div class="number-item">
+      <div class="number-val">∞</div>
+      <div class="number-label">Gravur-Möglichkeiten</div>
+    </div>
+    <div class="number-item">
+      <div class="number-val">1</div>
+      <div class="number-label">Standort · Dieburg</div>
+    </div>
+  </div>
+</div>
+
+<!-- TESTIMONIALS -->
+<div class="testimonials">
+  <div class="testimonials-header">
+    <span class="section-tag">Kundenstimmen</span>
+    <div class="section-rule" style="margin:0 auto;"></div>
+  </div>
+  <div class="testimonials-grid">
+    <div class="testimonial">
+      <div class="testimonial-stars">★★★★★</div>
+      <blockquote>„Das Windlicht mit unseren Hochzeitsdaten ist einfach perfekt. Jedes Mal wenn wir es anzünden, denken wir an diesen Abend."</blockquote>
+      <div class="testimonial-author">Sarah & Markus, Frankfurt</div>
+    </div>
+    <div class="testimonial">
+      <div class="testimonial-stars">★★★★★</div>
+      <blockquote>„Haben Flaconella als Tischdeko für unser Restaurant genommen. Gäste fragen ständig danach – beste Werbung überhaupt."</blockquote>
+      <div class="testimonial-author">Restaurant Perla, Darmstadt</div>
+    </div>
+    <div class="testimonial">
+      <div class="testimonial-stars">★★★★★</div>
+      <blockquote>„Die Lampe ist das Gesprächsstück in meiner Wohnung. Toll zu wissen, dass die Flasche vorher in einem echten Café stand."</blockquote>
+      <div class="testimonial-author">Thomas K., Dieburg</div>
+    </div>
+  </div>
+</div>
+
+<!-- CONTACT -->
+<section class="contact" id="kontakt">
+  <div class="contact-grid">
+    <div class="contact-info">
+      <span class="section-tag">Kontakt</span>
+      <div class="section-rule"></div>
+      <h2>Lass uns<br><em>reden</em></h2>
+      <p>Fragen zum Shop, Wunschgravur anfragen, B2B-Angebot einholen oder einfach vorbeikommen – wir freuen uns.</p>
+      <div class="contact-details">
+        <div class="contact-detail">
+          <div class="cd-icon">📍</div>
+          <div>
+            <div class="cd-label">Standort</div>
+            <div class="cd-value">Padella Vino · Marktplatz · Dieburg</div>
+          </div>
+        </div>
+        <div class="contact-detail">
+          <div class="cd-icon">📧</div>
+          <div>
+            <div class="cd-label">E-Mail</div>
+            <div class="cd-value">hallo@flaconella.de</div>
+          </div>
+        </div>
+        <div class="contact-detail">
+          <div class="cd-icon">📸</div>
+          <div>
+            <div class="cd-label">Instagram</div>
+            <div class="cd-value">@flaconella.de</div>
+          </div>
+        </div>
+        <div class="contact-detail">
+          <div class="cd-icon">🕐</div>
+          <div>
+            <div class="cd-label">Abholung & Besichtigung</div>
+            <div class="cd-value">Di–So · Öffnungszeiten Padella Vino</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <form class="contact-form" onsubmit="submitContact(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label>Vorname</label>
+            <input type="text" placeholder="Maria" required>
+          </div>
+          <div class="form-group">
+            <label>Nachname</label>
+            <input type="text" placeholder="Müller" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>E-Mail</label>
+          <input type="email" placeholder="maria@example.de" required>
+        </div>
+        <div class="form-group">
+          <label>Betreff</label>
+          <select>
+            <option>Allgemeine Anfrage</option>
+            <option>Wunschgravur</option>
+            <option>Hochzeit / Event</option>
+            <option>Gastronomie & Hotels</option>
+            <option>Bestellung</option>
+            <option>Sonstiges</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Nachricht</label>
+          <textarea placeholder="Was können wir für dich tun?" required></textarea>
+        </div>
+        <button type="submit" class="form-submit">Nachricht senden</button>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">
+    <div class="footer-logo">FLACON<span>ELLA</span></div>
+    <p class="footer-tagline">Handgefertigte Deko aus recycelten Flaschen. Entstanden im Padella Vino, Dieburg.</p>
+    <div class="footer-social">
+      <a href="#" class="social-icon">📸</a>
+      <a href="#" class="social-icon">✉️</a>
+    </div>
+  </div>
+  <div class="footer-col">
+    <h4>Shop</h4>
+    <ul>
+      <li><a href="#shop">Windlichter</a></li>
+      <li><a href="#shop">Kerzenhalter</a></li>
+      <li><a href="#shop">Lampen</a></li>
+      <li><a href="#shop">Dekoflaschen</a></li>
+      <li><a href="#shop">Personalisiert</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <h4>Über uns</h4>
+    <ul>
+      <li><a href="#story">Unsere Story</a></li>
+      <li><a href="#process">Handwerk</a></li>
+      <li><a href="#individual">Wunschgravur</a></li>
+      <li><a href="https://padella-vino.de" target="_blank">Padella Vino</a></li>
+    </ul>
+  </div>
+  <div class="footer-col">
+    <h4>Service</h4>
+    <ul>
+      <li><a href="#kontakt">Kontakt</a></li>
+      <li><a href="#">Versand & Rückgabe</a></li>
+      <li><a href="#">Impressum</a></li>
+      <li><a href="#">Datenschutz</a></li>
+    </ul>
+  </div>
+</footer>
+<div class="footer-bottom">
+  <p>© 2026 Flaconella · Ein Projekt von <a href="#">Padella Vino Dieburg</a></p>
+  <p>Handgefertigt in Deutschland · Nachhaltig · Einzigartig</p>
+</div>
+
+<!-- CART SIDEBAR -->
+<div class="cart-overlay" id="cartOverlay" onclick="closeCart()"></div>
+<div class="cart-sidebar" id="cartSidebar">
+  <div class="cart-header">
+    <h3>Warenkorb</h3>
+    <button class="cart-close" onclick="closeCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems">
+    <div class="cart-empty">
+      <div class="cart-empty-icon">🍾</div>
+      <p>Noch leer</p>
+    </div>
+  </div>
+  <div class="cart-footer">
+    <div class="cart-subtotal">
+      <span>Gesamt</span>
+      <strong id="cartTotal">0,00 €</strong>
+    </div>
+    <p class="cart-note">inkl. MwSt. · Versandkosten werden im Checkout berechnet</p>
+    <button class="cart-checkout-btn" id="checkoutBtn" onclick="openCheckout()" disabled>Zur Kasse</button>
+  </div>
+</div>
+
+<!-- PRODUCT MODAL -->
+<div class="modal-overlay" id="productModal">
+  <div class="modal" id="modalContent">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div class="modal-grid">
+      <div class="modal-img" id="modalImg"></div>
+      <div class="modal-info" id="modalInfo"></div>
+    </div>
+  </div>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div class="modal-overlay" id="checkoutModal">
+  <div class="checkout-modal">
+    <button class="modal-close" onclick="closeCheckout()">✕</button>
+    <div class="checkout-header">
+      <h3>Bestellung abschließen</h3>
+      <p>Wir melden uns innerhalb von 24 Stunden</p>
+    </div>
+    <form class="checkout-body" onsubmit="submitOrder(event)">
+      <div>
+        <div class="checkout-section-title">Deine Bestellung</div>
+        <div class="checkout-order-summary" id="checkoutSummary"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>Vorname *</label>
+          <input type="text" id="co-fname" required placeholder="Maria">
+        </div>
+        <div class="form-group">
+          <label>Nachname *</label>
+          <input type="text" id="co-lname" required placeholder="Müller">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>E-Mail *</label>
+        <input type="email" id="co-email" required placeholder="maria@example.de">
+      </div>
+      <div class="form-group">
+        <label>Telefon</label>
+        <input type="tel" id="co-phone" placeholder="+49 6071 ...">
+      </div>
+      <div class="form-group">
+        <label>Straße & Hausnummer *</label>
+        <input type="text" id="co-street" required placeholder="Musterstraße 12">
+      </div>
+      <div class="form-row">
+        <div class="form-group">
+          <label>PLZ *</label>
+          <input type="text" id="co-zip" required placeholder="64807">
+        </div>
+        <div class="form-group">
+          <label>Ort *</label>
+          <input type="text" id="co-city" required placeholder="Dieburg">
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Anmerkungen</label>
+        <textarea id="co-note" placeholder="Besondere Wünsche, Gravurtexte die noch fehlen, ..." style="min-height:80px;background:#0d0d0d;border:1px solid rgba(240,232,208,0.1);color:#f0e8d0;padding:12px 14px;font-family:Montserrat,sans-serif;font-size:12px;outline:none;width:100%;resize:vertical;"></textarea>
+      </div>
+      <div class="checkout-payment-info">
+        <h4>Zahlung & Versand</h4>
+        <p>Wir senden dir eine Bestätigung mit Zahlungsinformationen per E-Mail. Zahlung per <strong>Überweisung oder PayPal</strong>. Versand innerhalb von 3–5 Werktagen nach Zahlungseingang. Abholung im Padella Vino jederzeit möglich.</p>
+      </div>
+      <button type="submit" class="checkout-submit">Verbindlich bestellen</button>
+      <p class="checkout-note">Mit der Bestellung stimmst du unseren AGB und der Datenschutzerklärung zu. Du erhältst eine Bestätigung per E-Mail.</p>
+    </form>
+  </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="modal-overlay" id="successModal">
+  <div class="success-modal">
+    <button class="modal-close" onclick="closeSuccess()">✕</button>
+    <div class="success-icon">🍾</div>
+    <h3>Bestellung eingegangen!</h3>
+    <p>Danke für deine Bestellung. Wir melden uns innerhalb von 24 Stunden mit deiner Bestätigung und den Zahlungsdetails per E-Mail.</p>
+    <button class="btn-primary" onclick="closeSuccess()">Weiter einkaufen</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"><span>✓</span> <span id="toastMsg">In den Warenkorb gelegt</span></div>
+
+<script>
+// ── PRODUCT DATA ──
+const PRODUCTS = [
+  {
+    id:'w1', cat:'windlicht', label:'Windlicht',
+    name:'Windlicht Natur',
+    tagline:'Weinflasche, geschnittener Rand, LED-Kerze',
+    desc:'Abgeschnittene Weinflasche mit sorgfältig geschliffenem Rand. Lieferung mit LED-Teelicht. Ideal auf dem Esstisch, Balkon oder als Gastgeschenk.',
+    icon:'🕯️', badge:'Bestseller', badgeType:'',
+    variants:[
+      {name:'Standard – ohne Gravur', price:22},
+      {name:'Mit Standardmotiv (Weintraube, Olivenzweig...)', price:28},
+      {name:'Mit Wunschgravur (Text oder Datum)', price:40, hasEngraving:true},
+    ]
+  },
+  {
+    id:'w2', cat:'windlicht', label:'Windlicht',
+    name:'Windlicht Duo',
+    tagline:'2er-Set aus sortierten Weinflaschen',
+    desc:'Zwei aufeinander abgestimmte Windlichter aus Weinflaschen der gleichen Serie. Perfekt für den Esstisch oder als Hochzeitsgeschenk.',
+    icon:'🕯️', badge:'Set', badgeType:'',
+    variants:[
+      {name:'2er-Set standard', price:38},
+      {name:'2er-Set mit Gravur', price:58, hasEngraving:true},
+    ]
+  },
+  {
+    id:'k1', cat:'kerzenhalter', label:'Kerzenhalter',
+    name:'Kerzenhalter Classic',
+    tagline:'Ganze Flasche mit elegantem Kerzenaufsatz',
+    desc:'Die ganze Flasche bleibt erhalten – ein Kerzenaufsatz aus Metall verwandelt sie in einen stilvollen Kerzenhalter. Geeignet für Standard-Kerzen.',
+    icon:'🍷', badge:'', badgeType:'',
+    variants:[
+      {name:'Standard', price:26},
+      {name:'Mit Gravur', price:38, hasEngraving:true},
+    ]
+  },
+  {
+    id:'k2', cat:'kerzenhalter', label:'Kerzenhalter',
+    name:'Kerzenhalter 2er-Set',
+    tagline:'Zwei Flaschen, ein perfektes Paar',
+    desc:'Zwei aufeinander abgestimmte Kerzenhalter – ideal als Tischdeko für besondere Anlässe oder als Geschenk für zwei.',
+    icon:'🍷', badge:'', badgeType:'',
+    variants:[
+      {name:'2er-Set standard', price:55},
+      {name:'2er-Set mit Gravur', price:72, hasEngraving:true},
+    ]
+  },
+  {
+    id:'l1', cat:'lampe', label:'Lampe',
+    name:'Flaschenlampe',
+    tagline:'Lichterkette durch den Korken, warm & stimmungsvoll',
+    desc:'Lichterkette mit warmweißen LEDs durch den Korkstopfen geführt. Batteriebetrieben oder mit USB. Schafft sofort Atmosphäre – auf dem Regal, Fensterbrett oder der Terrasse.',
+    icon:'💡', badge:'Neu', badgeType:'',
+    variants:[
+      {name:'Standard (Batterie)', price:34},
+      {name:'Standard (USB)', price:38},
+      {name:'Mit Gravur + USB', price:50, hasEngraving:true},
+    ]
+  },
+  {
+    id:'l2', cat:'lampe', label:'Lampe',
+    name:'Flaschenlampe Großformat',
+    tagline:'Magnumflasche mit 3m Lichterkette',
+    desc:'Großformat-Magnumflasche mit 3 Meter Lichterkette. Mehr Wirkung, mehr Licht. Perfekt als Raumakzent.',
+    icon:'💡', badge:'', badgeType:'',
+    variants:[
+      {name:'Standard', price:48},
+      {name:'Mit Gravur', price:62, hasEngraving:true},
+    ]
+  },
+  {
+    id:'d1', cat:'dekoflasche', label:'Dekoflasche',
+    name:'Dekoflasche mit Gravur',
+    tagline:'Ganze Flasche als Vase oder Dekoobjekt',
+    desc:'Die Flasche bleibt in ihrer ursprünglichen Form – mit einer Gravur wird sie zum Kunstobjekt. Als Vase, Raumdeko oder persönliches Andenken.',
+    icon:'🌿', badge:'', badgeType:'',
+    variants:[
+      {name:'Einfache Gravur (Text)', price:26},
+      {name:'Aufwendige Gravur (Motiv)', price:44, hasEngraving:true},
+    ]
+  },
+  {
+    id:'d2', cat:'dekoflasche', label:'Dekoflasche',
+    name:'Signatur-Flasche',
+    tagline:'Deine Lieblingsflasche. Mit deinem Text.',
+    desc:'Du bringst deine Lieblingsflasche mit – wir gravieren sie für dich. Wein, Whisky, Champagner. Das perfekte Erinnerungsstück.',
+    icon:'🌿', badge:'Individuell', badgeType:'custom',
+    variants:[
+      {name:'Gravur auf eigener Flasche', price:35, hasEngraving:true},
+    ]
+  },
+  {
+    id:'u1', cat:'kerzenumhuellung', label:'Kerzenumhüllung',
+    name:'Kerzenumhüllung',
+    tagline:'Umgedrehter Flaschenboden als Windschutz',
+    desc:'Der Boden der Flasche wird abgetrennt und umgekehrt über ein Teelicht gestülpt. Eleganter Windschutz für Innen- und Außenbereich.',
+    icon:'🕯️', badge:'', badgeType:'',
+    variants:[
+      {name:'Standard', price:24},
+      {name:'Mit Gravur', price:34, hasEngraving:true},
+    ]
+  },
+  {
+    id:'s1', cat:'sonderlinie', label:'Personalisiert',
+    name:'Event-Serie',
+    tagline:'Ab 10 Stück – für Hochzeiten, Firmen, Events',
+    desc:'Individuelle Seriengravur für deinen besonderen Anlass. Namen, Datum, Logo – wir produzieren ab 10 Stück zum Sonderpreis. Perfekt für Tischdeko, Gastgeschenke oder Unternehmensgeschenke.',
+    icon:'🎊', badge:'Ab 10 Stück', badgeType:'custom',
+    variants:[
+      {name:'Ab 10 Stück (Preis pro Stück)', price:20},
+      {name:'Ab 20 Stück (Preis pro Stück)', price:18},
+      {name:'Ab 50 Stück (Preis pro Stück)', price:15},
+    ]
+  },
+  {
+    id:'s2', cat:'sonderlinie', label:'Personalisiert',
+    name:'Einzelstück Premium',
+    tagline:'Vollständig individualisiert – dein Wunsch',
+    desc:'Ein Stück, komplett nach deinen Vorgaben. Motiv, Text, Flaschenwahl – alles frei kombinierbar. Ideal als außergewöhnliches Geschenk oder exklusive Deko.',
+    icon:'🎊', badge:'Exklusiv', badgeType:'custom',
+    variants:[
+      {name:'Einzelstück mit Wunschmotiv', price:60, hasEngraving:true},
+    ]
+  },
+];
+
+// ── CART STATE ──
+let cart = JSON.parse(localStorage.getItem('flaconella_cart') || '[]');
+let currentProduct = null;
+let selectedVariantIdx = 0;
+
+// ── RENDER SHOP ──
+function renderShop(){
+  const grid = document.getElementById('shopGrid');
+  grid.innerHTML = PRODUCTS.map(p => {
+    const minPrice = Math.min(...p.variants.map(v=>v.price));
+    return `<div class="product-card" data-cat="${p.cat}" onclick="openProduct('${p.id}')">
+      ${p.badge ? `<div class="product-badge ${p.badgeType}">${p.badge}</div>` : ''}
+      <div class="product-img">
+        ${bottleSVG(p.icon, p.cat)}
+      </div>
+      <div class="product-overlay">
+        <button class="overlay-btn" onclick="event.stopPropagation();openProduct('${p.id}')">Details ansehen</button>
+        <button class="overlay-btn cart-direct" onclick="event.stopPropagation();quickAdd('${p.id}')">In den Warenkorb</button>
+      </div>
+      <div class="product-info">
+        <span class="product-cat">${p.label}</span>
+        <div class="product-name">${p.name}</div>
+        <div class="product-price">ab ${minPrice} €</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function bottleSVG(icon, cat){
+  const colors = {windlicht:'#8a6f3a',kerzenhalter:'#5a4a6a',lampe:'#3a5a4a',dekoflasche:'#4a3a5a',kerzenumhuellung:'#6a4a3a',sonderlinie:'#c4a96a'};
+  const col = colors[cat] || '#8a8060';
+  return `<svg width="80" height="140" viewBox="0 0 80 140" fill="none" xmlns="http://www.w3.org/2000/svg" style="opacity:0.55">
+    <path d="M30 8 L30 32 C14 46 10 64 10 88 C10 116 22 132 40 132 C58 132 70 116 70 88 C70 64 66 46 50 32 L50 8 Z" fill="${col}" fill-opacity="0.18" stroke="${col}" stroke-width="1.2"/>
+    <rect x="28" y="3" width="24" height="7" rx="1.5" fill="${col}" fill-opacity="0.25" stroke="${col}" stroke-width="0.8"/>
+    <line x1="10" y1="72" x2="70" y2="72" stroke="${col}" stroke-width="0.6" opacity="0.4"/>
+    <text x="40" y="100" text-anchor="middle" font-size="22" opacity="0.5">${icon}</text>
+  </svg>`;
+}
+
+// ── FILTER ──
+function filterProducts(cat, btn){
+  document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('.product-card').forEach(card=>{
+    card.classList.toggle('hidden', cat!=='all' && card.dataset.cat!==cat);
+  });
+}
+
+// ── PRODUCT MODAL ──
+function openProduct(id){
+  currentProduct = PRODUCTS.find(p=>p.id===id);
+  if(!currentProduct) return;
+  selectedVariantIdx = 0;
+  renderModal();
+  document.getElementById('productModal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function renderModal(){
+  const p = currentProduct;
+  document.getElementById('modalImg').innerHTML = `<div style="transform:scale(1.4)">${bottleSVG(p.icon,p.cat)}</div>`;
+  const hasEngrave = p.variants.some(v=>v.hasEngraving);
+  document.getElementById('modalInfo').innerHTML = `
+    <div class="modal-cat">${p.label}</div>
+    <div class="modal-name">${p.name}</div>
+    <div class="modal-tagline">${p.tagline}</div>
+    <div class="modal-price" id="modalPrice">${p.variants[0].price} €</div>
+    <p class="modal-desc">${p.desc}</p>
+    <div class="modal-divider"></div>
+    <div class="modal-option-label">Variante wählen</div>
+    <div class="variant-selector">
+      ${p.variants.map((v,i)=>`
+        <label class="variant-option ${i===0?'selected':''}">
+          <input type="radio" name="variant" value="${i}" ${i===0?'checked':''} onchange="selectVariant(${i})">
+          <span class="variant-option-name">${v.name}</span>
+          <span class="variant-option-price">${v.price} €</span>
+        </label>
+      `).join('')}
+    </div>
+    ${hasEngrave ? `
+      <div class="engraving-field" id="engravingField" style="display:${p.variants[0].hasEngraving?'flex':'none'}">
+        <div class="modal-option-label">Gravurtext (optional)</div>
+        <input type="text" id="engravingText" placeholder="z.B. Maria & Thomas · 14.06.2026" maxlength="60">
+      </div>
+    ` : ''}
+    <button class="modal-add-btn" onclick="addToCart()">In den Warenkorb</button>
+  `;
+}
+
+function selectVariant(idx){
+  selectedVariantIdx = idx;
+  const v = currentProduct.variants[idx];
+  document.getElementById('modalPrice').textContent = v.price + ' €';
+  document.querySelectorAll('.variant-option').forEach((el,i)=>el.classList.toggle('selected',i===idx));
+  const ef = document.getElementById('engravingField');
+  if(ef) ef.style.display = v.hasEngraving ? 'flex' : 'none';
+}
+
+function closeModal(){
+  document.getElementById('productModal').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+// ── QUICK ADD ──
+function quickAdd(id){
+  const p = PRODUCTS.find(x=>x.id===id);
+  if(!p) return;
+  addItemToCart(p, 0, '');
+}
+
+// ── ADD TO CART ──
+function addToCart(){
+  const engrText = document.getElementById('engravingText');
+  const engraving = engrText ? engrText.value.trim() : '';
+  addItemToCart(currentProduct, selectedVariantIdx, engraving);
+  closeModal();
+}
+
+function addItemToCart(product, variantIdx, engraving){
+  const variant = product.variants[variantIdx];
+  const key = product.id + '_' + variantIdx + '_' + engraving;
+  const existing = cart.find(i=>i.key===key);
+  if(existing){
+    existing.qty++;
+  } else {
+    cart.push({key, productId:product.id, variantIdx, engraving, qty:1,
+      name:product.name, variant:variant.name, price:variant.price, icon:product.icon});
+  }
+  saveCart();
+  showToast(product.name + ' hinzugefügt');
+  updateCartUI();
+}
+
+// ── CART UI ──
+function saveCart(){
+  localStorage.setItem('flaconella_cart', JSON.stringify(cart));
+}
+
+function updateCartUI(){
+  const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const count = cart.reduce((s,i)=>s+i.qty,0);
+  const badge = document.getElementById('cartBadge');
+  badge.textContent = count;
+  badge.classList.toggle('visible', count>0);
+  document.getElementById('cartTotal').textContent = total.toFixed(2).replace('.',',') + ' €';
+  document.getElementById('checkoutBtn').disabled = count===0;
+
+  const container = document.getElementById('cartItems');
+  if(cart.length===0){
+    container.innerHTML = '<div class="cart-empty"><div class="cart-empty-icon">🍾</div><p>Noch leer</p></div>';
+    return;
+  }
+  container.innerHTML = cart.map(item=>`
+    <div class="cart-item">
+      <div class="cart-item-img">${item.icon}</div>
+      <div class="cart-item-info">
+        <div class="cart-item-name">${item.name}</div>
+        <div class="cart-item-variant">${item.variant}</div>
+        ${item.engraving ? `<div class="cart-item-engraving">Gravur: "${item.engraving}"</div>` : ''}
+        <div class="cart-item-price">${(item.price*item.qty).toFixed(2).replace('.',',')} €</div>
+        <div class="cart-item-qty">
+          <button class="qty-btn" onclick="changeQty('${item.key}',-1)">−</button>
+          <span class="qty-num">${item.qty}</span>
+          <button class="qty-btn" onclick="changeQty('${item.key}',1)">+</button>
+        </div>
+      </div>
+      <button class="cart-item-remove" onclick="removeItem('${item.key}')">✕</button>
+    </div>
+  `).join('');
+}
+
+function changeQty(key, delta){
+  const item = cart.find(i=>i.key===key);
+  if(!item) return;
+  item.qty += delta;
+  if(item.qty <= 0) cart = cart.filter(i=>i.key!==key);
+  saveCart(); updateCartUI();
+}
+
+function removeItem(key){
+  cart = cart.filter(i=>i.key!==key);
+  saveCart(); updateCartUI();
+}
+
+function openCart(){
+  document.getElementById('cartOverlay').classList.add('open');
+  document.getElementById('cartSidebar').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closeCart(){
+  document.getElementById('cartOverlay').classList.remove('open');
+  document.getElementById('cartSidebar').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+// ── CHECKOUT ──
+function openCheckout(){
+  closeCart();
+  const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const summaryLines = cart.map(i=>`
+    <div class="checkout-order-line">
+      <span>${i.qty}× ${i.name} – ${i.variant}${i.engraving?' (Gravur: "'+i.engraving+'"':''}</span>
+      <span>${(i.price*i.qty).toFixed(2).replace('.',',')} €</span>
+    </div>
+  `).join('');
+  document.getElementById('checkoutSummary').innerHTML = summaryLines + `
+    <div class="checkout-order-line" style="border-top:1px solid rgba(196,169,106,0.2);margin-top:4px">
+      <strong>Gesamt</strong>
+      <strong>${total.toFixed(2).replace('.',',')} €</strong>
+    </div>
+  `;
+  document.getElementById('checkoutModal').classList.add('open');
+  document.body.style.overflow='hidden';
+}
+
+function closeCheckout(){
+  document.getElementById('checkoutModal').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+function submitOrder(e){
+  e.preventDefault();
+  const fname = document.getElementById('co-fname').value;
+  const lname = document.getElementById('co-lname').value;
+  const email = document.getElementById('co-email').value;
+  const phone = document.getElementById('co-phone').value;
+  const street = document.getElementById('co-street').value;
+  const zip = document.getElementById('co-zip').value;
+  const city = document.getElementById('co-city').value;
+  const note = document.getElementById('co-note').value;
+  const total = cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const orderLines = cart.map(i=>`${i.qty}x ${i.name} (${i.variant})${i.engraving?' [Gravur: '+i.engraving+']':''}: ${(i.price*i.qty).toFixed(2)}€`).join('%0A');
+  const body = `Bestellung von ${fname} ${lname}%0AE-Mail: ${email}%0ATelefon: ${phone}%0A%0ALieferadresse:%0A${street}%0A${zip} ${city}%0A%0ABestellung:%0A${orderLines}%0A%0AGesamtbetrag: ${total.toFixed(2)}€%0A%0AAnmerkungen:%0A${note}`;
+  window.location.href = `mailto:hallo@flaconella.de?subject=Bestellung von ${fname} ${lname}&body=${body}`;
+  closeCheckout();
+  cart = [];
+  saveCart();
+  updateCartUI();
+  setTimeout(()=>{ document.getElementById('successModal').classList.add('open'); },400);
+}
+
+function closeSuccess(){
+  document.getElementById('successModal').classList.remove('open');
+  document.body.style.overflow='';
+}
+
+// ── CONTACT FORM ──
+function submitContact(e){
+  e.preventDefault();
+  showToast('Nachricht gesendet – wir melden uns bald!');
+  e.target.reset();
+}
+
+// ── TOAST ──
+function showToast(msg){
+  document.getElementById('toastMsg').textContent = msg;
+  const t = document.getElementById('toast');
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// ── MOBILE NAV ──
+function toggleMobileMenu(){
+  const links = document.querySelector('.nav-links');
+  if(links.style.display==='flex'){
+    links.style.display='';
+  } else {
+    links.style.display='flex';
+    links.style.flexDirection='column';
+    links.style.position='fixed';
+    links.style.top='70px';
+    links.style.left='0';
+    links.style.right='0';
+    links.style.background='rgba(13,13,13,0.98)';
+    links.style.padding='32px 40px';
+    links.style.gap='24px';
+    links.style.borderBottom='1px solid rgba(138,128,96,0.15)';
+    links.style.zIndex='199';
+  }
+}
+
+// ── ESC TO CLOSE ──
+document.addEventListener('keydown', e=>{
+  if(e.key==='Escape'){
+    closeModal(); closeCart(); closeCheckout(); closeSuccess();
+  }
+});
+
+// ── INIT ──
+renderShop();
+updateCartUI();
+</script>
+</body>
+</html>
