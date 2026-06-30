@@ -85,8 +85,11 @@ section{padding:100px 60px;}
 .product-card:hover{transform:translateY(-2px);}
 .product-card:hover .product-overlay{opacity:1;}
 .product-img{width:100%;height:300px;background:#161616;display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden;}
+.product-img img{width:100%;height:100%;object-fit:cover;object-position:center top;transition:transform 0.5s ease;}
+.product-card:hover .product-img img{transform:scale(1.04);}
 .product-img svg{transition:transform 0.4s;}
 .product-card:hover .product-img svg{transform:scale(1.05);}
+.modal-img img{width:100%;height:100%;object-fit:cover;object-position:center top;}
 .product-overlay{position:absolute;inset:0;background:rgba(13,13,13,0.88);opacity:0;transition:opacity 0.3s;display:flex;align-items:center;justify-content:center;gap:12px;flex-direction:column;}
 .overlay-btn{border:1px solid rgba(196,169,106,0.5);color:#c4a96a;padding:11px 28px;font-size:8px;letter-spacing:3px;text-transform:uppercase;font-weight:600;cursor:pointer;background:none;font-family:'Montserrat',sans-serif;transition:all 0.2s;}
 .overlay-btn:hover{background:#c4a96a;color:#0d0d0d;border-color:#c4a96a;}
@@ -404,7 +407,7 @@ footer{background:#0a0a0a;border-top:1px solid rgba(138,128,96,0.12);padding:60p
     <button class="filter-btn" data-filter="kerzenhalter" onclick="filterProducts('kerzenhalter',this)">Kerzenhalter</button>
     <button class="filter-btn" data-filter="lampe" onclick="filterProducts('lampe',this)">Lampen</button>
     <button class="filter-btn" data-filter="dekoflasche" onclick="filterProducts('dekoflasche',this)">Dekoflaschen</button>
-    <button class="filter-btn" data-filter="kerzenumhuellung" onclick="filterProducts('kerzenumhuellung',this)">Kerzenumhüllungen</button>
+    <button class="filter-btn" data-filter="kerze" onclick="filterProducts('kerze',this)">Kerzen</button>
     <button class="filter-btn" data-filter="sonderlinie" onclick="filterProducts('sonderlinie',this)">Personalisiert</button>
   </div>
   <div class="shop-grid" id="shopGrid"></div>
@@ -423,16 +426,16 @@ footer{background:#0a0a0a;border-top:1px solid rgba(138,128,96,0.12);padding:60p
       <a href="#individual" class="story-link">Mehr erfahren →</a>
     </div>
     <div class="story-visual">
-      <div class="story-img-main">
-        <svg width="100" height="160" viewBox="0 0 100 160">
-          <path d="M38 10 L38 40 C20 55 15 75 15 100 C15 130 28 150 50 150 C72 150 85 130 85 100 C85 75 80 55 62 40 L62 10 Z" fill="none" stroke="#c4a96a" stroke-width="1.5" opacity="0.6"/>
-          <rect x="35" y="5" width="30" height="8" rx="2" fill="none" stroke="#c4a96a" stroke-width="1" opacity="0.4"/>
-          <line x1="15" y1="80" x2="85" y2="80" stroke="#c4a96a" stroke-width="0.5" opacity="0.3"/>
-        </svg>
+      <div class="story-img-main" style="overflow:hidden;padding:0;">
+        <img src="images/kollektion.webp" alt="Flaconella Kollektion" style="width:100%;height:100%;object-fit:cover;object-position:center;">
       </div>
       <div class="story-img-row">
-        <div class="story-img-small"><span class="img-caption">Werkstatt</span></div>
-        <div class="story-img-small"><span class="img-caption">Gravur</span></div>
+        <div class="story-img-small" style="overflow:hidden;padding:0;">
+          <img src="images/lampe-duo.webp" alt="Zwei Flaschenlampen" style="width:100%;height:100%;object-fit:cover;">
+        </div>
+        <div class="story-img-small" style="overflow:hidden;padding:0;">
+          <img src="images/kerzen-gruppe.webp" alt="Kerzen-Kollektion" style="width:100%;height:100%;object-fit:cover;">
+        </div>
       </div>
     </div>
   </div>
@@ -788,106 +791,355 @@ footer{background:#0a0a0a;border-top:1px solid rgba(138,128,96,0.12);padding:60p
 <script>
 // ── PRODUCT DATA ──
 const PRODUCTS = [
+  // ── WINDLICHTER ──
   {
     id:'w1', cat:'windlicht', label:'Windlicht',
-    name:'Windlicht Natur',
-    tagline:'Weinflasche, geschnittener Rand, LED-Kerze',
-    desc:'Abgeschnittene Weinflasche mit sorgfältig geschliffenem Rand. Lieferung mit LED-Teelicht. Ideal auf dem Esstisch, Balkon oder als Gastgeschenk.',
+    name:'Windlicht Blumen',
+    tagline:'Braune Flasche, floraler Schliff, Teelicht',
+    desc:'Abgeschnittene braune Weinflasche mit sorgfältig geschliffenem Rand und feinem Blütenmuster. Warmweißes Teelicht inklusive. Perfekt auf dem Esstisch, Balkon oder als Tischdeko für besondere Abende.',
     icon:'🕯️', badge:'Bestseller', badgeType:'',
+    image:'images/braune_flasche_windlicht_blumen_01.webp',
     variants:[
       {name:'Standard – ohne Gravur', price:22},
-      {name:'Mit Standardmotiv (Weintraube, Olivenzweig...)', price:28},
+      {name:'Mit Standardmotiv (Weintraube, Olivenzweig…)', price:28},
       {name:'Mit Wunschgravur (Text oder Datum)', price:40, hasEngraving:true},
     ]
   },
   {
     id:'w2', cat:'windlicht', label:'Windlicht',
-    name:'Windlicht Duo',
-    tagline:'2er-Set aus sortierten Weinflaschen',
-    desc:'Zwei aufeinander abgestimmte Windlichter aus Weinflaschen der gleichen Serie. Perfekt für den Esstisch oder als Hochzeitsgeschenk.',
-    icon:'🕯️', badge:'Set', badgeType:'',
+    name:'Windlicht Noir',
+    tagline:'Schwarze Flasche, florale Gravur',
+    desc:'Dunkle Bordeaux-Flasche mit geschliffenem Rand und eingraviertem Blütenmuster – das Licht des Teelichts bringt die Gravur erst richtig zur Geltung. Elegante Optik für einen Esstisch mit Stil.',
+    icon:'🕯️', badge:'', badgeType:'',
+    image:'images/schwarze_flasche_windlicht_blumen_01.webp',
     variants:[
-      {name:'2er-Set standard', price:38},
-      {name:'2er-Set mit Gravur', price:58, hasEngraving:true},
+      {name:'Standard – ohne Gravur', price:22},
+      {name:'Mit Blütenmotiv', price:30},
+      {name:'Mit Wunschgravur', price:40, hasEngraving:true},
     ]
   },
+  {
+    id:'w3', cat:'windlicht', label:'Windlicht',
+    name:'Windlicht Beeren',
+    tagline:'Schwarzes Glas, Beerenmotiv, herbstlich',
+    desc:'Schwarze Flasche mit einem zarten Beerenmotiv – Holunder, Brombeere, wilde Früchte. Das Windlicht setzt im Herbst und Winter besondere Akzente, funktioniert aber das ganze Jahr.',
+    icon:'🕯️', badge:'', badgeType:'',
+    image:'images/schwarze_flasche_windlicht_beeren_01.webp',
+    variants:[
+      {name:'Standard', price:24},
+      {name:'Mit Wunschgravur', price:38, hasEngraving:true},
+    ]
+  },
+  {
+    id:'w4', cat:'windlicht', label:'Windlicht',
+    name:'Windlicht Gravur',
+    tagline:'Braunes Glas, klassische Gravur, zeitlos',
+    desc:'Das schlichte Windlicht mit feiner Gravur – klar, ruhig, edel. Perfekt für alle, die Wohnakzente setzen wollen ohne lauten Auftritt. Die Gravur kann auf Wunsch personalisiert werden.',
+    icon:'🕯️', badge:'', badgeType:'',
+    image:'images/braunes_glas_windlicht_gravur_01.webp',
+    variants:[
+      {name:'Standardmotiv', price:26},
+      {name:'Mit Wunschgravur', price:38, hasEngraving:true},
+    ]
+  },
+
+  // ── KERZENHALTER ──
   {
     id:'k1', cat:'kerzenhalter', label:'Kerzenhalter',
-    name:'Kerzenhalter Classic',
-    tagline:'Ganze Flasche mit elegantem Kerzenaufsatz',
-    desc:'Die ganze Flasche bleibt erhalten – ein Kerzenaufsatz aus Metall verwandelt sie in einen stilvollen Kerzenhalter. Geeignet für Standard-Kerzen.',
-    icon:'🍷', badge:'', badgeType:'',
+    name:'Kerzenhalter 3er-Set',
+    tagline:'Drei Flaschen, ein stimmungsvolles Ensemble',
+    desc:'Drei aufeinander abgestimmte Flaschen mit Kerzenaufsatz – unterschiedliche Höhen, gleicher Stil. Als Tischdeko für besondere Abende oder als Geschenk-Set, das bleibt.',
+    icon:'🍷', badge:'Set', badgeType:'',
+    image:'images/kerzenhalter_set_3er_02.webp',
     variants:[
-      {name:'Standard', price:26},
-      {name:'Mit Gravur', price:38, hasEngraving:true},
+      {name:'3er-Set standard', price:65},
+      {name:'3er-Set mit Gravur (alle 3)', price:90, hasEngraving:true},
     ]
   },
-  {
-    id:'k2', cat:'kerzenhalter', label:'Kerzenhalter',
-    name:'Kerzenhalter 2er-Set',
-    tagline:'Zwei Flaschen, ein perfektes Paar',
-    desc:'Zwei aufeinander abgestimmte Kerzenhalter – ideal als Tischdeko für besondere Anlässe oder als Geschenk für zwei.',
-    icon:'🍷', badge:'', badgeType:'',
-    variants:[
-      {name:'2er-Set standard', price:55},
-      {name:'2er-Set mit Gravur', price:72, hasEngraving:true},
-    ]
-  },
+
+  // ── FLASCHENLAMPEN ──
   {
     id:'l1', cat:'lampe', label:'Lampe',
-    name:'Flaschenlampe',
-    tagline:'Lichterkette durch den Korken, warm & stimmungsvoll',
-    desc:'Lichterkette mit warmweißen LEDs durch den Korkstopfen geführt. Batteriebetrieben oder mit USB. Schafft sofort Atmosphäre – auf dem Regal, Fensterbrett oder der Terrasse.',
-    icon:'💡', badge:'Neu', badgeType:'',
+    name:'Flaschenlampe Bulgarini',
+    tagline:'Elegante Grappa-Flasche mit warmweißer Lichterkette',
+    desc:'Die hohe Bulgarini-Grappa-Flasche mit ihrem schlanken Hals und Korkstopfen wird mit einer warmweißen LED-Lichterkette gefüllt. Ein echter Hingucker auf dem Regal, Sideboard oder Esstisch.',
+    icon:'💡', badge:'Bestseller', badgeType:'',
+    image:'images/lampe-bulgarini-classic.webp',
     variants:[
-      {name:'Standard (Batterie)', price:34},
       {name:'Standard (USB)', price:38},
-      {name:'Mit Gravur + USB', price:50, hasEngraving:true},
+      {name:'Mit Gravur + USB', price:52, hasEngraving:true},
     ]
   },
   {
     id:'l2', cat:'lampe', label:'Lampe',
-    name:'Flaschenlampe Großformat',
-    tagline:'Magnumflasche mit 3m Lichterkette',
-    desc:'Großformat-Magnumflasche mit 3 Meter Lichterkette. Mehr Wirkung, mehr Licht. Perfekt als Raumakzent.',
+    name:'Flaschenlampe Blüten',
+    tagline:'Bulgarini mit Blütenrelief – zweimal schön',
+    desc:'Die bauchigere Bulgarini-Flasche trägt ein feines Blütenrelief – durch die Lichterkette kommt das Muster erst richtig zur Geltung. Ein Stück das gleichzeitig leuchtet und verziert.',
     icon:'💡', badge:'', badgeType:'',
+    image:'images/lampe-bulgarini-blueten.webp',
     variants:[
-      {name:'Standard', price:48},
-      {name:'Mit Gravur', price:62, hasEngraving:true},
+      {name:'Standard (USB)', price:38},
+      {name:'Mit Gravur + USB', price:52, hasEngraving:true},
     ]
   },
   {
-    id:'d1', cat:'dekoflasche', label:'Dekoflasche',
-    name:'Dekoflasche mit Gravur',
-    tagline:'Ganze Flasche als Vase oder Dekoobjekt',
-    desc:'Die Flasche bleibt in ihrer ursprünglichen Form – mit einer Gravur wird sie zum Kunstobjekt. Als Vase, Raumdeko oder persönliches Andenken.',
-    icon:'🌿', badge:'', badgeType:'',
+    id:'l3', cat:'lampe', label:'Lampe',
+    name:'Flaschenlampe Botanik',
+    tagline:'Eckige Flasche mit Botanik-Gravur',
+    desc:'Diese markante eckige Flasche mit fein eingraviertem Blatt- und Blütenwerk verwandelt sich durch die warmgelbe Lichterkette in ein leuchtendes Kunstobjekt. Die Lichtmuster an der Wand sind ein Bonus.',
+    icon:'💡', badge:'Neu', badgeType:'',
+    image:'images/lampe-eckig-botanik.webp',
     variants:[
-      {name:'Einfache Gravur (Text)', price:26},
-      {name:'Aufwendige Gravur (Motiv)', price:44, hasEngraving:true},
+      {name:'Standard (USB)', price:42},
+      {name:'Mit Wunschgravur + USB', price:58, hasEngraving:true},
+    ]
+  },
+  {
+    id:'l4', cat:'lampe', label:'Lampe',
+    name:'Flaschenlampe Hexagonal',
+    tagline:'Achteckige Flasche mit botanischer Gravur',
+    desc:'Die außergewöhnliche Achteck-Flasche mit feiner Botanik-Gravur – Blätter, Ranken, Blüten – wird durch die Lichterkette zum Stimmungsmacher. Die vielen Flächen brechen das Licht und schaffen ein warmes Spiel im Raum.',
+    icon:'💡', badge:'', badgeType:'',
+    image:'images/lampe-hexagonal.webp',
+    variants:[
+      {name:'Standard (USB)', price:44},
+      {name:'Mit Wunschgravur + USB', price:60, hasEngraving:true},
+    ]
+  },
+  {
+    id:'l5', cat:'lampe', label:'Lampe',
+    name:'Flaschenlampe Hexagonal Amber',
+    tagline:'Bernsteinglas, warmes Licht, dramatischer Effekt',
+    desc:'Dieselbe Hexagonal-Flasche in bernsteinfarbenem Glas – das warme Glas verstärkt den Lichteffekt noch einmal. Auf der Tischfläche entsteht ein wunderschöner Lichtpool.',
+    icon:'💡', badge:'', badgeType:'',
+    image:'images/lampe-hexagonal-stimmung.webp',
+    variants:[
+      {name:'Standard (USB)', price:44},
+      {name:'Mit Wunschgravur + USB', price:60, hasEngraving:true},
+    ]
+  },
+  {
+    id:'l6', cat:'lampe', label:'Lampe',
+    name:'Flaschenlampe Pusteblume',
+    tagline:'Schlanke Flasche, poetische Gravur',
+    desc:'Eine schlanke Flasche mit einer feinen Pusteblumen-Gravur – die Lichterkette lässt die einzelnen Samen leuchten. Poesie als Dekoobjekt.',
+    icon:'💡', badge:'', badgeType:'',
+    image:'images/lampe-pusteblume.webp',
+    variants:[
+      {name:'Standard (USB)', price:38},
+      {name:'Mit Wunschgravur + USB', price:52, hasEngraving:true},
+    ]
+  },
+  {
+    id:'l7', cat:'lampe', label:'Lampe',
+    name:'Flaschenlampe Ramazotti',
+    tagline:'Ikonische Ramazotti-Flasche, neu belebt',
+    desc:'Die charakteristische Ramazotti-Flasche mit ihrer markanten Form – gefüllt mit warmweißer Lichterkette. Wiedererkennungswert trifft auf Wohnambiente.',
+    icon:'💡', badge:'', badgeType:'',
+    image:'images/lampe-ramazotti.webp',
+    variants:[
+      {name:'Standard (USB)', price:35},
+      {name:'Mit Gravur + USB', price:48, hasEngraving:true},
+    ]
+  },
+  {
+    id:'l8', cat:'lampe', label:'Lampe',
+    name:'Flaschenlampe Weinflasche',
+    tagline:'Bauchige Weinflasche, klassische Eleganz',
+    desc:'Eine bauchige Weinflasche mit üppigem Körper – die Lichterkette füllt die Kurven mit warmem Glanz. Die klassischste aller Formen, als Leuchte neu interpretiert.',
+    icon:'💡', badge:'', badgeType:'',
+    image:'images/lampe-weinflasche.webp',
+    variants:[
+      {name:'Standard (USB)', price:32},
+      {name:'Mit Gravur + USB', price:46, hasEngraving:true},
+    ]
+  },
+  {
+    id:'l9', cat:'lampe', label:'Lampe',
+    name:'Flaschenlampe Bordeaux Dunkel',
+    tagline:'Dunkle Bordeaux-Flasche, warmes Licht',
+    desc:'Die dunkle, olivgrüne Bordeaux-Flasche gibt dem Licht eine erdige, warme Note. Das Licht scheint durch das Grünglas – ein Ton, der beruhigt.',
+    icon:'💡', badge:'', badgeType:'',
+    image:'images/lampe-rotwein.webp',
+    variants:[
+      {name:'Standard (USB)', price:32},
+      {name:'Mit Gravur + USB', price:46, hasEngraving:true},
+    ]
+  },
+  {
+    id:'l10', cat:'lampe', label:'Lampe',
+    name:'Flaschenlampe Bordeaux Klar',
+    tagline:'Klares Glas, maximaler Lichteffekt',
+    desc:'Die klare Bordeaux-Flasche lässt das Licht ungefiltert strahlen – heller, direkter, dramatischer. Die Lichterkette ist vollständig sichtbar und erzeugt ein Muster wie ein Sternenhimmel.',
+    icon:'💡', badge:'', badgeType:'',
+    image:'images/lampe-weinflasche-klar.webp',
+    variants:[
+      {name:'Standard (USB)', price:32},
+      {name:'Mit Gravur + USB', price:46, hasEngraving:true},
+    ]
+  },
+
+  // ── DEKOFLASCHEN ──
+  {
+    id:'d1', cat:'dekoflasche', label:'Dekoflasche',
+    name:'Dekoflasche Botanik',
+    tagline:'Bulgarini mit vollflächiger Botanik-Gravur',
+    desc:'Die hohe Bulgarini-Flasche vollständig mit Blättern, Ranken und Blüten graviert – ein Kunstobjekt, das ohne Strom auskommt. Als Vase mit getrockneten Blumen oder reine Raumdeko.',
+    icon:'🌿', badge:'', badgeType:'',
+    image:'images/dekoflasche-botanik.webp',
+    variants:[
+      {name:'Botanik-Gravur (fix)', price:38},
+      {name:'Botanik + Wunschtext', price:52, hasEngraving:true},
     ]
   },
   {
     id:'d2', cat:'dekoflasche', label:'Dekoflasche',
-    name:'Signatur-Flasche',
-    tagline:'Deine Lieblingsflasche. Mit deinem Text.',
-    desc:'Du bringst deine Lieblingsflasche mit – wir gravieren sie für dich. Wein, Whisky, Champagner. Das perfekte Erinnerungsstück.',
-    icon:'🌿', badge:'Individuell', badgeType:'custom',
+    name:'Dekoflasche Geriffelt',
+    tagline:'Geriffelte Oberfläche, Rose, zeitlos',
+    desc:'Eine geriffelte Flasche mit einer eingravierten Rose – die unregelmäßige Oberfläche gibt der Gravur eine besondere Tiefe. Klassische Romantik in modernem Gewand.',
+    icon:'🌿', badge:'', badgeType:'',
+    image:'images/dekoflasche-geriffelt.webp',
     variants:[
-      {name:'Gravur auf eigener Flasche', price:35, hasEngraving:true},
+      {name:'Rosen-Gravur (fix)', price:36},
+      {name:'Mit Wunschtext oder -datum', price:50, hasEngraving:true},
     ]
   },
   {
-    id:'u1', cat:'kerzenumhuellung', label:'Kerzenumhüllung',
-    name:'Kerzenumhüllung',
-    tagline:'Umgedrehter Flaschenboden als Windschutz',
-    desc:'Der Boden der Flasche wird abgetrennt und umgekehrt über ein Teelicht gestülpt. Eleganter Windschutz für Innen- und Außenbereich.',
-    icon:'🕯️', badge:'', badgeType:'',
+    id:'d3', cat:'dekoflasche', label:'Dekoflasche',
+    name:'Dekoflasche Aperol 1919',
+    tagline:'Kultige Aperol-Flasche mit Botanik-Gravur',
+    desc:'Die ikonische Aperol-Flasche mit ihrem unverwechselbaren Design – mit einer Botanik-Gravur veredelt. Wer kennt sie nicht? Als Deko eine Klasse für sich.',
+    icon:'🌿', badge:'Kultig', badgeType:'',
+    image:'images/dekoflasche-aperol.webp',
     variants:[
-      {name:'Standard', price:24},
-      {name:'Mit Gravur', price:34, hasEngraving:true},
+      {name:'Botanik-Gravur (fix)', price:34},
+      {name:'Mit Wunschgravur', price:46, hasEngraving:true},
     ]
   },
+  {
+    id:'d4', cat:'dekoflasche', label:'Dekoflasche',
+    name:'Weinflasche Duo',
+    tagline:'Zwei Flaschen, ein Set – dunkel und hell',
+    desc:'Eine dunkle Olivflasche und eine klare Weinflasche als aufeinander abgestimmtes Duo. Mit Gravur nach Wunsch auf einer oder beiden Flaschen. Perfekt als Hochzeitsgeschenk.',
+    icon:'🌿', badge:'Set', badgeType:'',
+    image:'images/weinflasche-duo.webp',
+    variants:[
+      {name:'2er-Set ohne Gravur', price:40},
+      {name:'2er-Set mit Gravur (beide)', price:62, hasEngraving:true},
+    ]
+  },
+
+  // ── KERZEN ──
+  {
+    id:'c1', cat:'kerze', label:'Kerze',
+    name:'Kerze Zitrus Grün',
+    tagline:'Frische Zitrus-Note im grünen Glas',
+    desc:'Handgegossene Duftkerze mit belebender Zitrusnote in einem grünen Glasgefäß. Brenndauer ca. 35 Stunden. Frisch, lebendig, mediterran.',
+    icon:'🕯️', badge:'Neu', badgeType:'',
+    image:'images/kerze-zitrus-gruen.webp',
+    variants:[
+      {name:'Standard (ca. 35h)', price:18},
+      {name:'Mit persönlichem Etikett', price:24, hasEngraving:true},
+    ]
+  },
+  {
+    id:'c2', cat:'kerze', label:'Kerze',
+    name:'Kerze Rosa Blume',
+    tagline:'Blumige Duftkerze, rosafarbene Eleganz',
+    desc:'Handgegossene Kerze mit einem blumigen, femininen Duft. Das rosafarbene Wachs mit dem sanften Stich ins Pastellige macht sie auch optisch zum Geschenk.',
+    icon:'🕯️', badge:'', badgeType:'',
+    image:'images/kerze-rosa-blume.webp',
+    variants:[
+      {name:'Standard (ca. 35h)', price:18},
+      {name:'Mit persönlichem Etikett', price:24, hasEngraving:true},
+    ]
+  },
+  {
+    id:'c3', cat:'kerze', label:'Kerze',
+    name:'Kerze Gelb Blume',
+    tagline:'Sonnige Blütennote, warmes Gelb',
+    desc:'Sonniges Gelb, blumiger Duft – diese Kerze bringt Frühling ins Zimmer. Handgegossen, ca. 35 Stunden Brenndauer.',
+    icon:'🕯️', badge:'', badgeType:'',
+    image:'images/kerze-gelb-blume.webp',
+    variants:[
+      {name:'Standard (ca. 35h)', price:18},
+      {name:'Mit persönlichem Etikett', price:24, hasEngraving:true},
+    ]
+  },
+  {
+    id:'c4', cat:'kerze', label:'Kerze',
+    name:'Kerze Grün Rotblumen',
+    tagline:'Grünes Glas, rote Blütenakzente',
+    desc:'Kontrastreiche Kombination: grünes Wachsgefäß, rote Blütendetails, erdiger Blumenduft. Eine Kerze mit Persönlichkeit – fällt auf.',
+    icon:'🕯️', badge:'', badgeType:'',
+    image:'images/kerze-gruen-rotblumen.webp',
+    variants:[
+      {name:'Standard (ca. 35h)', price:20},
+      {name:'Mit persönlichem Etikett', price:26, hasEngraving:true},
+    ]
+  },
+  {
+    id:'c5', cat:'kerze', label:'Kerze',
+    name:'Kerze Orange Quadrat',
+    tagline:'Quadratische Form, warme Orangenote',
+    desc:'Die quadratische Form macht diese Kerze zum Eyecatcher. Warme Orangennote, handgegossen, ca. 40 Stunden Brenndauer dank mehr Wachs.',
+    icon:'🕯️', badge:'', badgeType:'',
+    image:'images/kerze-orange-quadrat.webp',
+    variants:[
+      {name:'Standard (ca. 40h)', price:22},
+      {name:'Mit persönlichem Etikett', price:28, hasEngraving:true},
+    ]
+  },
+  {
+    id:'c6', cat:'kerze', label:'Kerze',
+    name:'Kerze Bernstein Rund',
+    tagline:'Runde Form, warmes Bernstein, Holzduft',
+    desc:'Runde, gediegene Kerze in Bernsteinton mit warmem Holz- oder Vanille-Duft. Der Klassiker unter den Wohnkerzen – für alle, die es ruhig und behaglich mögen.',
+    icon:'🕯️', badge:'Bestseller', badgeType:'',
+    image:'images/kerze-bernstein-rund.webp',
+    variants:[
+      {name:'Standard (ca. 40h)', price:20},
+      {name:'Mit persönlichem Etikett', price:26, hasEngraving:true},
+    ]
+  },
+  {
+    id:'c7', cat:'kerze', label:'Kerze',
+    name:'Kerze Zitrone Rund',
+    tagline:'Runde Form, frische Zitronennote',
+    desc:'Gelbes Wachs, runde Form, frischer Zitronenduft – leicht, belebend, mediterran. Der ideale Begleiter für Sommerabende auf der Terrasse.',
+    icon:'🕯️', badge:'', badgeType:'',
+    image:'images/kerze-zitrone-rund.webp',
+    variants:[
+      {name:'Standard (ca. 35h)', price:18},
+      {name:'Mit persönlichem Etikett', price:24, hasEngraving:true},
+    ]
+  },
+  {
+    id:'c8', cat:'kerze', label:'Kerze',
+    name:'Kerze Pink Quadrat',
+    tagline:'Statement-Kerze in Pink, quadratisch',
+    desc:'Kräftiges Pink, quadratische Form – diese Kerze setzt ein klares Zeichen. Blumiger Duft, handgegossen, ca. 40 Stunden Brenndauer. Das ideale Geschenk wenn man auffallen möchte.',
+    icon:'🕯️', badge:'', badgeType:'',
+    image:'images/kerze-pink-quadrat.webp',
+    variants:[
+      {name:'Standard (ca. 40h)', price:22},
+      {name:'Mit persönlichem Etikett', price:28, hasEngraving:true},
+    ]
+  },
+  {
+    id:'c9', cat:'kerze', label:'Kerze',
+    name:'Kerze Pink Herz',
+    tagline:'Herzform, romantisch, besonders',
+    desc:'Eine Kerze in Herzform – rosa, weich, romantisch. Perfekt als Geschenk zum Valentinstag, Muttertag oder einfach so. Handgegossen, ca. 20 Stunden Brenndauer.',
+    icon:'🕯️', badge:'Geschenk', badgeType:'custom',
+    image:'images/kerze-pink-herz.webp',
+    variants:[
+      {name:'Standard (ca. 20h)', price:18},
+      {name:'Mit persönlichem Etikett', price:24, hasEngraving:true},
+    ]
+  },
+
+  // ── SONDERLINIE ──
   {
     id:'s1', cat:'sonderlinie', label:'Personalisiert',
     name:'Event-Serie',
@@ -918,6 +1170,11 @@ let currentProduct = null;
 let selectedVariantIdx = 0;
 
 // ── RENDER SHOP ──
+function productImgHTML(p){
+  if(p.image) return `<img src="${p.image}" alt="${p.name}" loading="lazy">`;
+  return bottleSVG(p.icon, p.cat);
+}
+
 function renderShop(){
   const grid = document.getElementById('shopGrid');
   grid.innerHTML = PRODUCTS.map(p => {
@@ -925,7 +1182,7 @@ function renderShop(){
     return `<div class="product-card" data-cat="${p.cat}" onclick="openProduct('${p.id}')">
       ${p.badge ? `<div class="product-badge ${p.badgeType}">${p.badge}</div>` : ''}
       <div class="product-img">
-        ${bottleSVG(p.icon, p.cat)}
+        ${productImgHTML(p)}
       </div>
       <div class="product-overlay">
         <button class="overlay-btn" onclick="event.stopPropagation();openProduct('${p.id}')">Details ansehen</button>
@@ -972,7 +1229,9 @@ function openProduct(id){
 
 function renderModal(){
   const p = currentProduct;
-  document.getElementById('modalImg').innerHTML = `<div style="transform:scale(1.4)">${bottleSVG(p.icon,p.cat)}</div>`;
+  document.getElementById('modalImg').innerHTML = p.image
+    ? `<img src="${p.image}" alt="${p.name}">`
+    : `<div style="transform:scale(1.4)">${bottleSVG(p.icon,p.cat)}</div>`;
   const hasEngrave = p.variants.some(v=>v.hasEngraving);
   document.getElementById('modalInfo').innerHTML = `
     <div class="modal-cat">${p.label}</div>
