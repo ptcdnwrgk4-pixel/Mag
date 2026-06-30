@@ -1170,19 +1170,14 @@ let currentProduct = null;
 let selectedVariantIdx = 0;
 
 // ── RENDER SHOP ──
-function productImgHTML(p){
-  if(p.image) return `<img src="${p.image}" alt="${p.name}" loading="lazy">`;
-  return bottleSVG(p.icon, p.cat);
-}
-
 function renderShop(){
   const grid = document.getElementById('shopGrid');
   grid.innerHTML = PRODUCTS.map(p => {
     const minPrice = Math.min(...p.variants.map(v=>v.price));
-    return `<div class="product-card" data-cat="${p.cat}" onclick="openProduct('${p.id}')">
+    return `<div class="product-card" data-cat="${p.cat}" data-pid="${p.id}" onclick="openProduct('${p.id}')">
       ${p.badge ? `<div class="product-badge ${p.badgeType}">${p.badge}</div>` : ''}
       <div class="product-img">
-        ${productImgHTML(p)}
+        ${p.image ? `<img alt="${p.name}">` : bottleSVG(p.icon, p.cat)}
       </div>
       <div class="product-overlay">
         <button class="overlay-btn" onclick="event.stopPropagation();openProduct('${p.id}')">Details ansehen</button>
@@ -1195,6 +1190,12 @@ function renderShop(){
       </div>
     </div>`;
   }).join('');
+  // Set img.src via DOM API — iOS Safari ignores data URIs embedded in innerHTML strings
+  PRODUCTS.forEach(p => {
+    if(!p.image) return;
+    const card = grid.querySelector(`[data-pid="${p.id}"]`);
+    if(card){ const img = card.querySelector('.product-img img'); if(img) img.src = p.image; }
+  });
 }
 
 function bottleSVG(icon, cat){
@@ -1229,9 +1230,16 @@ function openProduct(id){
 
 function renderModal(){
   const p = currentProduct;
-  document.getElementById('modalImg').innerHTML = p.image
-    ? `<img src="${p.image}" alt="${p.name}">`
-    : `<div style="transform:scale(1.4)">${bottleSVG(p.icon,p.cat)}</div>`;
+  const imgDiv = document.getElementById('modalImg');
+  imgDiv.innerHTML = '';
+  if(p.image){
+    const img = document.createElement('img');
+    img.alt = p.name;
+    img.src = p.image;
+    imgDiv.appendChild(img);
+  } else {
+    imgDiv.innerHTML = `<div style="transform:scale(1.4)">${bottleSVG(p.icon,p.cat)}</div>`;
+  }
   const hasEngrave = p.variants.some(v=>v.hasEngraving);
   document.getElementById('modalInfo').innerHTML = `
     <div class="modal-cat">${p.label}</div>
