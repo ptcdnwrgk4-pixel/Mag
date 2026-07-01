@@ -1170,6 +1170,13 @@ let currentProduct = null;
 let selectedVariantIdx = 0;
 
 // ── RENDER SHOP ──
+// Returns image src: preloaded static element (bundled) or file path (hosted)
+function getImgSrc(p){
+  const cached = document.getElementById('pimg-' + p.id);
+  if(cached && cached.src) return cached.src;
+  return p.image || null;
+}
+
 function renderShop(){
   const grid = document.getElementById('shopGrid');
   grid.innerHTML = PRODUCTS.map(p => {
@@ -1190,11 +1197,10 @@ function renderShop(){
       </div>
     </div>`;
   }).join('');
-  // Set img.src via DOM API — iOS Safari ignores data URIs embedded in innerHTML strings
   PRODUCTS.forEach(p => {
     if(!p.image) return;
     const card = grid.querySelector(`[data-pid="${p.id}"]`);
-    if(card){ const img = card.querySelector('.product-img img'); if(img) img.src = p.image; }
+    if(card){ const img = card.querySelector('.product-img img'); if(img) img.src = getImgSrc(p); }
   });
 }
 
@@ -1235,7 +1241,7 @@ function renderModal(){
   if(p.image){
     const img = document.createElement('img');
     img.alt = p.name;
-    img.src = p.image;
+    img.src = getImgSrc(p);
     imgDiv.appendChild(img);
   } else {
     imgDiv.innerHTML = `<div style="transform:scale(1.4)">${bottleSVG(p.icon,p.cat)}</div>`;
