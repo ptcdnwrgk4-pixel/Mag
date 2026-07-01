@@ -1232,7 +1232,13 @@ function openProduct(id){
   renderModal();
   document.getElementById('productModal').classList.add('open');
   document.body.style.overflow='hidden';
+  history.pushState({modal:'product'}, '');
 }
+
+window.addEventListener('popstate', function(){
+  if(document.getElementById('productModal').classList.contains('open')) closeModal();
+  else if(document.getElementById('checkoutModal').classList.contains('open')) closeCheckout();
+});
 
 function renderModal(){
   const p = currentProduct;
@@ -1286,6 +1292,7 @@ function selectVariant(idx){
 function closeModal(){
   document.getElementById('productModal').classList.remove('open');
   document.body.style.overflow='';
+  if(history.state && history.state.modal) history.back();
 }
 
 // ── QUICK ADD ──
