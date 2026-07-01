@@ -153,22 +153,24 @@ async def run_cycle(tr_client: TRClient, conn, dry_run: bool) -> None:
                         "TAKE_PROFIT", portfolio_value,
                     )
 
-    # 4. Signale für alle Watchlist-Assets berechnen
-    for asset in config.WATCHLIST:
+    # 4. Universum scannen – Signale für alle Assets berechnen
+    buy_candidates = []   # (score, asset, sig)
+    sell_signals   = []   # (asset, sig)
+
+    logger.info(f"Scanne {len(config.UNIVERSE)} Assets …")
+
+    for asset in config.UNIVERSE:
         try:
-            # Historische Daten (yfinance)
             hist_df = load_history(asset["yahoo_ticker"], config.HISTORY_DAYS)
             if hist_df is None or len(hist_df) < config.MA_TREND_PERIOD:
-                logger.warning(
+                logger.debug(
                     f"{asset['name']}: Nicht genug historische Daten "
                     f"({0 if hist_df is None else len(hist_df)} Tage)"
                 )
                 continue
 
-            # Signal berechnen
             sig = strategy.calculate_signals(hist_df, config)
 
-            # Signal loggen
             db.log_signal(
                 conn, asset["name"], asset["isin"],
                 sig["rsi"], sig["price"],
@@ -176,76 +178,88 @@ async def run_cycle(tr_client: TRClient, conn, dry_run: bool) -> None:
                 sig["signal"],
             )
 
-            logger.info(
-                f"{asset['name']:15s} | Signal={sig['signal']:4s} | {sig['reason']}"
-            )
+            if sig["signal"] == "BUY" and not risk.has_open_position(conn, asset["isin"]):
+                score = strategy.score_signal(sig, config)
+                buy_candidates.append((score, asset, sig))
+                logger.info(f"  BUY  {asset['name']:20s} | Score={score:5.1f} | {sig['reason']}")
 
-            # --- BUY ---
-            if sig["signal"] == "BUY":
-                if risk.has_open_position(conn, asset["isin"]):
-                    logger.debug(f"{asset['name']}: Position bereits offen, BUY übersprungen")
-                    continue
+            elif sig["signal"] == "SELL" and risk.has_open_position(conn, asset["isin"]):
+                sell_signals.append((asset, sig))
+                logger.info(f"  SELL {asset['name']:20s} | {sig['reason']}")
 
-                if not risk.can_open_position(conn, config):
-                    logger.warning(f"{asset['name']}: Max. Positionen ({config.MAX_OPEN_POSITIONS}) erreicht")
-                    continue
-
-                price    = sig["price"]
-                quantity = risk.calculate_position_size(portfolio_value, price, config)
-                if quantity <= 0:
-                    logger.warning(f"{asset['name']}: Berechnete Menge = 0, übersprungen")
-                    continue
-
-                value_eur = price * quantity
-                logger.info(
-                    f"{'[DRY-RUN] ' if dry_run else ''}KAUFE {quantity} x {asset['name']} "
-                    f"@ {price:.4f} EUR = {value_eur:.2f} EUR"
-                )
-
-                if not dry_run:
-                    result = await tr_client.buy(asset["isin"], quantity)
-                    if result:
-                        db.log_trade(
-                            conn, asset["name"], asset["isin"],
-                            "BUY", price, quantity, value_eur,
-                            "SIGNAL", portfolio_value,
-                        )
-                        db.log_signal(
-                            conn, asset["name"], asset["isin"],
-                            sig["rsi"], sig["price"],
-                            sig["bb_lower"], sig["bb_upper"], sig["ma200"],
-                            sig["signal"], executed=True,
-                        )
-
-            # --- SELL ---
-            elif sig["signal"] == "SELL":
-                if not risk.has_open_position(conn, asset["isin"]):
-                    logger.debug(f"{asset['name']}: Keine offene Position, SELL übersprungen")
-                    continue
-
-                open_pos = db.get_open_positions(conn)
-                pos = next((p for p in open_pos if p["isin"] == asset["isin"]), None)
-                if not pos:
-                    continue
-
-                price     = sig["price"]
-                value_eur = price * pos["quantity"]
-                logger.info(
-                    f"{'[DRY-RUN] ' if dry_run else ''}VERKAUFE {pos['quantity']} x {asset['name']} "
-                    f"@ {price:.4f} EUR = {value_eur:.2f} EUR"
-                )
-
-                if not dry_run:
-                    result = await tr_client.sell(asset["isin"], pos["quantity"])
-                    if result:
-                        db.log_trade(
-                            conn, asset["name"], asset["isin"],
-                            "SELL", price, pos["quantity"], value_eur,
-                            "SIGNAL", portfolio_value,
-                        )
+            else:
+                logger.debug(f"  HOLD {asset['name']:20s} | {sig['reason']}")
 
         except Exception as e:
             logger.error(f"Fehler bei {asset['name']}: {e}", exc_info=True)
+
+    # 5. Verkäufe zuerst ausführen (Kapital freimachen)
+    for asset, sig in sell_signals:
+        try:
+            open_pos = db.get_open_positions(conn)
+            pos = next((p for p in open_pos if p["isin"] == asset["isin"]), None)
+            if not pos:
+                continue
+
+            price     = sig["price"]
+            value_eur = price * pos["quantity"]
+            logger.info(
+                f"{'[DRY-RUN] ' if dry_run else ''}VERKAUFE {pos['quantity']} x "
+                f"{asset['name']} @ {price:.4f} EUR = {value_eur:.2f} EUR"
+            )
+
+            if not dry_run:
+                result = await tr_client.sell(asset["isin"], pos["quantity"])
+                if result:
+                    db.log_trade(
+                        conn, asset["name"], asset["isin"],
+                        "SELL", price, pos["quantity"], value_eur,
+                        "SIGNAL", portfolio_value,
+                    )
+        except Exception as e:
+            logger.error(f"SELL-Fehler bei {asset['name']}: {e}", exc_info=True)
+
+    # 6. Top-N Käufe nach Score ausführen
+    buy_candidates.sort(key=lambda x: x[0], reverse=True)
+    free_slots  = config.MAX_OPEN_POSITIONS - len(db.get_open_positions(conn))
+    picks       = buy_candidates[: min(config.TOP_N_TRADES, free_slots)]
+
+    if buy_candidates:
+        logger.info(
+            f"{len(buy_candidates)} BUY-Kandidaten gefunden. "
+            f"Kaufe Top {len(picks)} (freie Slots: {free_slots}):"
+        )
+
+    for score, asset, sig in picks:
+        try:
+            price    = sig["price"]
+            quantity = risk.calculate_position_size(portfolio_value, price, config)
+            if quantity <= 0:
+                logger.warning(f"{asset['name']}: Berechnete Menge = 0, übersprungen")
+                continue
+
+            value_eur = price * quantity
+            logger.info(
+                f"{'[DRY-RUN] ' if dry_run else ''}KAUFE {quantity} x "
+                f"{asset['name']} @ {price:.4f} EUR = {value_eur:.2f} EUR  [Score={score:.1f}]"
+            )
+
+            if not dry_run:
+                result = await tr_client.buy(asset["isin"], quantity)
+                if result:
+                    db.log_trade(
+                        conn, asset["name"], asset["isin"],
+                        "BUY", price, quantity, value_eur,
+                        "SIGNAL", portfolio_value,
+                    )
+                    db.log_signal(
+                        conn, asset["name"], asset["isin"],
+                        sig["rsi"], sig["price"],
+                        sig["bb_lower"], sig["bb_upper"], sig["ma200"],
+                        sig["signal"], executed=True,
+                    )
+        except Exception as e:
+            logger.error(f"BUY-Fehler bei {asset['name']}: {e}", exc_info=True)
 
 
 # --- Modi ---

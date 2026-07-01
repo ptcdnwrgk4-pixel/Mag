@@ -107,3 +107,34 @@ def calculate_signals(df: pd.DataFrame, config) -> dict:
             f"BB=[{bb_lower:.4f}–{bb_upper:.4f}] | MA200={ma200:.4f}"
         ),
     }
+
+
+def score_signal(sig: dict, config) -> float:
+    """
+    Bewertet die Stärke eines BUY-Signals von 0–100.
+    Wird genutzt um die besten Chancen aus dem Universum herauszupicken.
+
+    RSI-Komponente  (0–50): Wie weit ist RSI unter RSI_BUY?
+    BB-Komponente   (0–50): Wie weit ist der Preis unter dem unteren Bollinger Band?
+
+    Nur BUY-Signale bekommen einen Score > 0.
+    """
+    if sig.get("signal") != "BUY" or sig.get("rsi") is None:
+        return 0.0
+
+    rsi      = sig["rsi"]
+    price    = sig["price"]
+    bb_lower = sig["bb_lower"]
+
+    # RSI-Score: bei RSI=0 → 50 Punkte, bei RSI=RSI_BUY → 0 Punkte
+    rsi_score = max(0.0, (config.RSI_BUY - rsi) / config.RSI_BUY * 50)
+
+    # BB-Score: wie weit (%) ist der Preis unter dem unteren Band?
+    # 1 % unter BB → 5 Punkte, 10 % unter BB → 50 Punkte (gedeckelt)
+    if bb_lower and bb_lower > 0 and price < bb_lower:
+        bb_depth  = (bb_lower - price) / bb_lower
+        bb_score  = min(50.0, bb_depth * 500)
+    else:
+        bb_score = 0.0
+
+    return round(rsi_score + bb_score, 2)
