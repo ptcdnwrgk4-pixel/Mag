@@ -109,6 +109,32 @@ def calculate_signals(df: pd.DataFrame, config) -> dict:
     }
 
 
+def score_sell_signal(sig: dict, config) -> float:
+    """
+    Bewertet die Stärke eines SELL-Signals für SHORT-Einstiege (0–100).
+    Höher = stärker überkauft = besser für Short.
+
+    RSI-Komponente  (0–50): Wie weit über RSI_SELL?
+    BB-Komponente   (0–50): Wie weit über dem oberen Bollinger Band?
+    """
+    if sig.get("signal") != "SELL" or sig.get("rsi") is None:
+        return 0.0
+
+    rsi      = sig["rsi"]
+    price    = sig["price"]
+    bb_upper = sig["bb_upper"]
+
+    rsi_score = max(0.0, (rsi - config.RSI_SELL) / (100 - config.RSI_SELL) * 50)
+
+    if bb_upper and bb_upper > 0 and price > bb_upper:
+        bb_depth = (price - bb_upper) / bb_upper
+        bb_score = min(50.0, bb_depth * 500)
+    else:
+        bb_score = 0.0
+
+    return round(rsi_score + bb_score, 2)
+
+
 def score_signal(sig: dict, config) -> float:
     """
     Bewertet die Stärke eines BUY-Signals von 0–100.

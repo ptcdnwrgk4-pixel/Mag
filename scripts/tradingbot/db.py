@@ -6,18 +6,31 @@ def init_db(db_path: str) -> sqlite3.Connection:
     conn = sqlite3.connect(db_path, check_same_thread=False)
     conn.execute("""
         CREATE TABLE IF NOT EXISTS trades (
-            id                   INTEGER PRIMARY KEY AUTOINCREMENT,
-            timestamp            TEXT    NOT NULL,
-            asset_name           TEXT    NOT NULL,
-            isin                 TEXT    NOT NULL,
-            action               TEXT    NOT NULL,
-            price                REAL    NOT NULL,
-            quantity             REAL    NOT NULL,
-            value_eur            REAL    NOT NULL,
-            reason               TEXT    NOT NULL,
-            portfolio_value_after REAL
+            id                      INTEGER PRIMARY KEY AUTOINCREMENT,
+            timestamp               TEXT    NOT NULL,
+            asset_name              TEXT    NOT NULL,
+            isin                    TEXT    NOT NULL,
+            underlying_isin         TEXT,
+            direction               TEXT    DEFAULT 'LONG',
+            action                  TEXT    NOT NULL,
+            price                   REAL    NOT NULL,
+            underlying_price        REAL,
+            quantity                REAL    NOT NULL,
+            value_eur               REAL    NOT NULL,
+            reason                  TEXT    NOT NULL,
+            portfolio_value_after   REAL
         )
     """)
+    # Migration für bestehende DBs: fehlende Spalten nachrüsten
+    existing = {r[1] for r in conn.execute("PRAGMA table_info(trades)").fetchall()}
+    for col, defn in [
+        ("underlying_isin",    "TEXT"),
+        ("direction",          "TEXT DEFAULT 'LONG'"),
+        ("underlying_price",   "REAL"),
+    ]:
+        if col not in existing:
+            conn.execute(f"ALTER TABLE trades ADD COLUMN {col} {defn}")
+
     conn.execute("""
         CREATE TABLE IF NOT EXISTS signals (
             id          INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -47,15 +60,23 @@ def log_trade(
     value_eur: float,
     reason: str,
     portfolio_value_after: float = None,
+    underlying_isin: str = None,
+    direction: str = "LONG",
+    underlying_price: float = None,
 ) -> None:
     conn.execute(
         """INSERT INTO trades
-           (timestamp, asset_name, isin, action, price, quantity, value_eur, reason, portfolio_value_after)
-           VALUES (?,?,?,?,?,?,?,?,?)""",
+           (timestamp, asset_name, isin, underlying_isin, direction, action,
+            price, underlying_price, quantity, value_eur, reason, portfolio_value_after)
+           VALUES (?,?,?,?,?,?,?,?,?,?,?,?)""",
         (
             datetime.utcnow().isoformat(),
-            asset_name, isin, action,
-            price, quantity, value_eur,
+            asset_name, isin,
+            underlying_isin or isin,
+            direction,
+            action,
+            price, underlying_price,
+            quantity, value_eur,
             reason, portfolio_value_after,
         ),
     )
@@ -88,28 +109,58 @@ def log_signal(
     conn.commit()
 
 
-def get_open_positions(conn: sqlite3.Connection) -> list[dict]:
-    """Alle Positionen mit positivem Netto-Bestand (mehr Käufe als Verkäufe)."""
+def _open_by_direction(conn: sqlite3.Connection, direction_filter: str) -> list[dict]:
+    """Interne Funktion: offene Positionen einer bestimmten Richtung."""
     rows = conn.execute("""
         SELECT
             isin,
+            underlying_isin,
             asset_name,
-            SUM(CASE WHEN action='BUY' THEN quantity ELSE -quantity END) AS net_qty,
+            direction,
+            SUM(CASE WHEN action='BUY' THEN quantity ELSE -quantity END)           AS net_qty,
             SUM(CASE WHEN action='BUY' THEN price * quantity ELSE 0 END) /
-                NULLIF(SUM(CASE WHEN action='BUY' THEN quantity ELSE 0 END), 0) AS avg_entry
+                NULLIF(SUM(CASE WHEN action='BUY' THEN quantity ELSE 0 END), 0)    AS avg_entry,
+            AVG(CASE WHEN action='BUY' THEN underlying_price END)                  AS avg_underlying_entry
         FROM trades
+        WHERE (direction = ? OR (direction IS NULL AND ? = 'LONG'))
         GROUP BY isin
         HAVING net_qty > 0.000001
-    """).fetchall()
+    """, (direction_filter, direction_filter)).fetchall()
     return [
         {
-            "isin":            r[0],
-            "asset_name":      r[1],
-            "quantity":        r[2],
-            "avg_entry_price": r[3],
+            "isin":                    r[0],
+            "underlying_isin":         r[1] or r[0],
+            "asset_name":              r[2],
+            "direction":               r[3] or "LONG",
+            "quantity":                r[4],
+            "avg_entry_price":         r[5],
+            "avg_underlying_entry":    r[6],
         }
         for r in rows
     ]
+
+
+def get_open_longs(conn: sqlite3.Connection) -> list[dict]:
+    return _open_by_direction(conn, "LONG")
+
+
+def get_open_shorts(conn: sqlite3.Connection) -> list[dict]:
+    return _open_by_direction(conn, "SHORT")
+
+
+def get_open_positions(conn: sqlite3.Connection) -> list[dict]:
+    """Alle offenen Positionen (Long + Short)."""
+    return get_open_longs(conn) + get_open_shorts(conn)
+
+
+def has_open_long(conn: sqlite3.Connection, underlying_isin: str) -> bool:
+    longs = get_open_longs(conn)
+    return any(p["underlying_isin"] == underlying_isin for p in longs)
+
+
+def has_open_short(conn: sqlite3.Connection, underlying_isin: str) -> bool:
+    shorts = get_open_shorts(conn)
+    return any(p["underlying_isin"] == underlying_isin for p in shorts)
 
 
 def get_todays_pnl(conn: sqlite3.Connection) -> float:
@@ -123,14 +174,3 @@ def get_todays_pnl(conn: sqlite3.Connection) -> float:
     for action, value in rows:
         pnl += value if action == "SELL" else -value
     return pnl
-
-
-def get_entry_price(conn: sqlite3.Connection, isin: str) -> float | None:
-    """Durchschnittlicher Kaufpreis für eine offene Position."""
-    row = conn.execute("""
-        SELECT
-            SUM(price * quantity) / NULLIF(SUM(quantity), 0)
-        FROM trades
-        WHERE isin=? AND action='BUY'
-    """, (isin,)).fetchone()
-    return float(row[0]) if row and row[0] is not None else None
