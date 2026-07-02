@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Checklisten · Padella Vino</title>
+
+<!-- PWA / Mobile-App -->
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#8a8060">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Checklisten">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="favicon-64.png">
+
+<style>
+  :root{
+    --bg:#f7f4ef; --card:#fff; --ink:#262626; --grey:#6b6b6b;
+    --accent:#8a8060; --line:#e4ded4; --done:#eef2e9; --donein:#7aa874;
+  }
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+       background:var(--bg);color:var(--ink);
+       padding-bottom:calc(60px + env(safe-area-inset-bottom));}
+  header{position:sticky;top:0;background:var(--bg);
+         padding:calc(16px + env(safe-area-inset-top)) 16px 8px;z-index:10;
+         border-bottom:1px solid var(--line);}
+  h1{margin:0;font-size:22px;}
+  .sub{color:var(--grey);font-size:13px;margin-top:2px;}
+  .tabs{display:flex;gap:6px;overflow-x:auto;padding:12px 16px 4px;position:sticky;
+        top:calc(64px + env(safe-area-inset-top));background:var(--bg);z-index:9;}
+  .tab{flex:0 0 auto;padding:8px 14px;border-radius:20px;border:1px solid var(--line);
+       background:#fff;color:var(--ink);font-size:14px;font-weight:600;cursor:pointer;
+       display:flex;align-items:center;gap:7px;}
+  .tab.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+  .tab .count{font-size:11px;font-weight:700;background:var(--line);color:var(--grey);
+       border-radius:10px;padding:1px 7px;min-width:34px;text-align:center;}
+  .tab.active .count{background:rgba(255,255,255,.25);color:#fff;}
+  .tab.complete .count{background:var(--donein);color:#fff;}
+  section{display:none;padding:8px 14px 24px;}
+  section.active{display:block;}
+  .head{color:var(--accent);font-weight:700;font-size:14px;margin:18px 4px 6px;}
+  .hint{color:var(--grey);font-size:12.5px;font-style:italic;margin:2px 4px 8px 40px;}
+  .item{display:flex;align-items:flex-start;gap:12px;background:var(--card);
+        border:1px solid var(--line);border-radius:12px;padding:13px 14px;margin:7px 0;
+        cursor:pointer;transition:background .15s;}
+  .item.done{background:var(--done);}
+  .box{flex:0 0 auto;width:24px;height:24px;border:2px solid #888;border-radius:6px;
+       display:flex;align-items:center;justify-content:center;margin-top:1px;}
+  .item.done .box{background:var(--donein);border-color:var(--donein);}
+  .item.done .box::after{content:"✓";color:#fff;font-size:16px;font-weight:700;}
+  .txt{font-size:15px;line-height:1.35;}
+  .item.done .txt{color:var(--grey);text-decoration:line-through;}
+  .reset{margin:14px 4px 0;padding:10px;width:100%;border:1px dashed var(--accent);
+          background:transparent;color:var(--accent);border-radius:10px;font-size:14px;cursor:pointer;}
+  .footer{text-align:center;color:var(--grey);font-size:12px;padding:20px;}
+  #install{display:none;position:fixed;left:12px;right:12px;
+       bottom:calc(12px + env(safe-area-inset-bottom));z-index:20;
+       background:var(--accent);color:#fff;border:none;border-radius:12px;
+       padding:13px;font-size:14px;font-weight:600;box-shadow:0 4px 16px rgba(0,0,0,.18);cursor:pointer;}
+</style>
+</head>
+<body>
+<header>
+  <h1>Checklisten</h1>
+  <div class="sub">Padella Vino · zum Abhaken · Stand Juli 2026</div>
+</header>
+<div class="tabs" id="tabs"></div>
+<div id="content"></div>
+<div class="footer">Abhaken durch Antippen · Haken bleiben gespeichert bis „Zurücksetzen“</div>
+<button id="install">📲 Als App auf dem Startbildschirm speichern</button>
+
+<script>
+const data = {
+ "Morgens": {sub:"Schichtbeginn · 10:00", items:[
+   ["i","Sicherungskasten: Sicherungen oben links (1 & 2) hochklappen"],
+   ["i","Licht an – hinten & vorne"],
+   ["i","Kasse & Spülmaschine anmachen"],
+   ["i","Schirme öffnen"],
+   ["h2","Regen: 4 · Hitze: 4 · Wind: keine · Sonne: 2 (mehr nach Bedarf)"],
+   ["i","Tische & Stühle draußen: aufschließen, aufstellen, säubern, auf Wackeln prüfen"],
+   ["i","Tische, Stühle, Bänke drinnen sauber & ordentlich eingedeckt?"],
+   ["i","Karten & Tafeln sauber, ordentlich, vollständig? Sonst herrichten"],
+   ["i","Tische eindecken (Karte, Tafeln, Sitzkissen/Felle)"],
+   ["i","Freifläche draußen: Dreck, Zigaretten, Laub entfernen"],
+   ["i","Schild auf „Open“ · Vino-Schild an"],
+   ["i","Auffüllung vorne: alle Getränke aufgefüllt"],
+   ["i","Vanilleeis, Orangen, Zitronen, Minze vorhanden? Sonst schneiden/vorbereiten"],
+   ["i","Küche: Cremes & Antipasti vorhanden & gut? (Probieren!) Sonst Bescheid/machen"],
+   ["i","Eismaschine an? Genug Eiswürfel?"],
+   ["i","Genug Eistee? Sonst ersetzen"],
+   ["i","Toilette: sauber, Tücher, Seife, Toilettenpapier? Abfall ggf. leeren"],
+   ["i","Aschenbecher sauber? 2–3 auf die Treppe stellen"],
+   ["i","Kaffeemühle an → mahlen, genug Bohnen? Sonst nachfüllen"],
+   ["i","Musik an"],
+   ["i","Laufend: Besteck rollen, Keks- & Zuckerbehälter füllen"],
+   ["i","Arbeits- & Gastbereich innen/außen sauber halten"],
+ ]},
+ "Mittag": {sub:"Schichtende · 14:30", items:[
+   ["i","Geschirr & Besteck vorspülen → Spülmaschine; Besteck polieren & einräumen"],
+   ["i","Gläser säubern, polieren, einräumen (wenn Korb fast voll)"],
+   ["i","Leergut ins Lager, Getränke auffüllen"],
+   ["h2","Pfand → Leergutkästen · ohne Pfand → Weinkästen · keine leeren in volle Kisten!"],
+   ["i","Alle Arbeitsflächen Küche säubern (auch unter den Brettern – trocken!)"],
+   ["i","Kühltheke säubern & alle Deckel drauf"],
+   ["i","Theke säubern, Waschbecken & Kaffeemühle"],
+   ["h","Zwei Listen führen:"],
+   ["i","Einkaufsliste – was nachkaufen? (Getränke, Lebensmittel, Verbrauchsmaterial)"],
+   ["i","Machen-Liste – was selbst neu machen? (Cremes, Antipasti, Eistee, Obst, Minze)"],
+   ["h2","Wenn etwas leer gemacht wird → sofort in Gruppe / auf Zettel"],
+   ["i","Schild auf „Closed“ · Vino-Schild aus · Musik aus"],
+   ["i","Tische leer räumen (Schilder, Karten rein)"],
+   ["i","Stühle ganz an die Tische rücken"],
+   ["i","Alles was brennen kann aus? (Grill, Herdplatte, Suppentopf)"],
+   ["i","Sicherungskasten: beide Sicherungen links runter"],
+   ["i","Licht aus · nochmal alles prüfen"],
+   ["i","Oberlichter schließen (Lagerraum links), falls offen"],
+   ["i","Kasse anlassen"],
+   ["i","Laden startklar für die nächste Schicht hinterlassen"],
+ ]},
+ "Abends": {sub:"Schichtbeginn · 17:30", items:[
+   ["i","Sicherungskasten: beide Sicherungen links hoch"],
+   ["i","Licht an – hinten & vorne"],
+   ["i","Schirme öffnen (gleiche Regeln wie morgens)"],
+   ["i","Tafeln prüfen – ordentlich & aktuell? Sonst neu beschriften"],
+   ["i","Tische abwischen & eindecken (Karten, Tafeln, Polster/Felle)"],
+   ["i","Schild auf „Open“ & Vino-Schild an"],
+   ["i","Auffüllung vorne: alle Getränke aufgefüllt"],
+   ["i","Vanilleeis, Orangen, Zitronen, Minze vorhanden?"],
+   ["i","Küche: Cremes & Antipasti vorhanden & gut? (Probieren!)"],
+   ["i","Eismaschine an? Genug Eiswürfel?"],
+   ["i","Genug Eistee? Sonst ersetzen"],
+   ["i","Toilette: sauber, Tücher, Seife, Toilettenpapier? Abfall ggf. leeren"],
+   ["i","Aschenbecher sauber? 2–3 auf die Treppe stellen"],
+   ["i","Musik an"],
+   ["i","Laufend: Besteck rollen, Keks- & Zuckerbehälter füllen"],
+   ["i","Arbeits- & Gastbereich sauber halten"],
+ ]},
+ "Schluss": {sub:"Schichtende · bis 23:00", items:[
+   ["h","Ca. 1 Std vor Schluss"],
+   ["i","Kaffeemaschine säubern"],
+   ["i","Theke säubern inkl. Waschbecken & Kaffeemühle (Kaffeesatz leeren)"],
+   ["i","Getränke auffüllen · Leergut ins Lager & sortieren"],
+   ["i","Milchkännchen in Kühlschrank (wenn leer → säubern)"],
+   ["i","Gläser spülen, polieren & einräumen"],
+   ["i","Müllsäcke wechseln (volle in Keller in die Tonne; voll → daneben)"],
+   ["i","Fenster schließen (Lagerraum links)"],
+   ["h","Ca. 45–30 Min vor Schluss"],
+   ["i","Küche säubern inkl. Geschirr & Besteck"],
+   ["i","Kühltheke sauber, Deckel drauf; Reste prüfen (offener Mozzarella etc.)"],
+   ["i","Alles was brennen kann aus?"],
+   ["h","Zwei Listen führen:"],
+   ["i","Einkaufsliste – was fehlt / geht zur Neige?"],
+   ["i","Machen-Liste – was selbst neu machen? (Cremes, Antipasti, Eistee, Obst, Minze)"],
+   ["h2","Wenn etwas leer gemacht wird → sofort in Gruppe / auf Zettel"],
+   ["h","Ca. 30 Min vor Schluss"],
+   ["i","Letzte Runde – Gäste auf Schließung hinweisen"],
+   ["i","Leere Gläser in Spülkorb; Korb voll → nochmal spülen"],
+   ["i","Kaffeemühle aus? (grüne Lampe aus)"],
+   ["h","Ca. 15 Min vor Schluss"],
+   ["i","Karten, Tafeln, Polster/Felle von freien Tischen reinräumen"],
+   ["i","Sitzsäcke & kleine Tische rein (wenn frei)"],
+   ["i","Alle offenen Tische abkassieren"],
+   ["i","Ansage: Schluss 23:00 (täglich, auch Fr & Sa) · Musik aus"],
+   ["i","Karten & Aschenbecher säubern"],
+   ["h2","Benutzte Aschenbecher stehen lassen bis nichts brennt · keine heiße Asche in Müll!"],
+   ["h","Schluss & wenn Gäste weg"],
+   ["i","Unbesetzte Tische abschließen · Schirme zu (wenn frei) · Vino-Schild aus"],
+   ["i","Restliche Karten/Tafeln/Polster/Sitzsäcke reinräumen"],
+   ["i","Restliche Tische abschließen (Gumminoppen korrekt, sonst Rost)"],
+   ["i","Alle Schirme zu & binden · Kerzen aus"],
+   ["i","Lichter & Aschenbecher rein (auf Theke abkühlen)"],
+   ["i","Alles drin? (auch Box) · Schild auf „Closed“"],
+   ["i","Sicherungskasten: 1 & 2 links runter"],
+   ["i","Kasse: Tagesabschluss → speichern → PC Shutdown → aus"],
+   ["i","Licht aus · Laden startklar hinterlassen · Abschließen"],
+ ]},
+};
+
+// ---- Persistenz (localStorage) ----
+const STORE_KEY = "padella-checklists-v1";
+function loadState(){ try{ return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; }catch(e){ return {}; } }
+function saveState(s){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(s)); }catch(e){} }
+let state = loadState();
+
+const tabsEl = document.getElementById("tabs");
+const contentEl = document.getElementById("content");
+const keys = Object.keys(data);
+const tabButtons = [];
+
+function updateCount(idx){
+  const key = keys[idx];
+  const total = data[key].items.filter(it=>it[0]==="i").length;
+  let done = 0;
+  data[key].items.forEach((it,i)=>{ if(it[0]==="i" && state[idx+"-"+i]) done++; });
+  const btn = tabButtons[idx];
+  btn.querySelector(".count").textContent = done+"/"+total;
+  btn.classList.toggle("complete", done===total && total>0);
+}
+
+keys.forEach((k,idx)=>{
+  const t=document.createElement("button");
+  t.className="tab"+(idx===0?" active":"");
+  t.innerHTML='<span class="label"></span><span class="count"></span>';
+  t.querySelector(".label").textContent=k;
+  t.onclick=()=>{
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+    document.querySelectorAll("section").forEach(x=>x.classList.remove("active"));
+    t.classList.add("active");
+    document.getElementById("sec-"+idx).classList.add("active");
+    window.scrollTo(0,0);
+  };
+  tabsEl.appendChild(t);
+  tabButtons.push(t);
+
+  const sec=document.createElement("section");
+  sec.className=(idx===0?"active":"");
+  sec.id="sec-"+idx;
+  data[k].items.forEach((it,i)=>{
+    if(it[0]==="h"){
+      const h=document.createElement("div");h.className="head";h.textContent=it[1];sec.appendChild(h);
+    }else if(it[0]==="h2"){
+      const h=document.createElement("div");h.className="hint";h.textContent=it[1];sec.appendChild(h);
+    }else{
+      const row=document.createElement("div");row.className="item";
+      row.innerHTML='<div class="box"></div><div class="txt"></div>';
+      row.querySelector(".txt").textContent=it[1];
+      if(state[idx+"-"+i]) row.classList.add("done");
+      row.onclick=()=>{
+        row.classList.toggle("done");
+        state[idx+"-"+i]=row.classList.contains("done");
+        saveState(state);
+        updateCount(idx);
+      };
+      sec.appendChild(row);
+    }
+  });
+  const rst=document.createElement("button");
+  rst.className="reset";rst.textContent="Alle Haken zurücksetzen";
+  rst.onclick=()=>{
+    sec.querySelectorAll(".item").forEach(x=>x.classList.remove("done"));
+    data[k].items.forEach((it,i)=>{ if(it[0]==="i") delete state[idx+"-"+i]; });
+    saveState(state);
+    updateCount(idx);
+  };
+  sec.appendChild(rst);
+  contentEl.appendChild(sec);
+  updateCount(idx);
+});
+
+// ---- Installieren (Android/Chrome) ----
+let deferredPrompt;
+const installBtn = document.getElementById("install");
+window.addEventListener("beforeinstallprompt",(e)=>{
+  e.preventDefault(); deferredPrompt=e; installBtn.style.display="block";
+});
+installBtn.onclick=async()=>{
+  installBtn.style.display="none";
+  if(deferredPrompt){ deferredPrompt.prompt(); await deferredPrompt.userChoice; deferredPrompt=null; }
+};
+window.addEventListener("appinstalled",()=>{ installBtn.style.display="none"; });
+
+// ---- Service Worker (offline) ----
+if("serviceWorker" in navigator){
+  window.addEventListener("load",()=>navigator.serviceWorker.register("sw.js").catch(()=>{}));
+}
+</script>
+</body>
+</html>
