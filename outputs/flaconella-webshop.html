@@ -248,7 +248,8 @@ footer{background:#0a0a0a;border-top:1px solid rgba(138,128,96,0.12);padding:60p
 .modal-name{font-family:'Playfair Display',serif;font-size:28px;font-weight:400;color:#fff;line-height:1.15;margin-bottom:6px;}
 .modal-tagline{font-size:12px;color:rgba(240,232,208,0.35);font-style:italic;margin-bottom:20px;font-weight:300;}
 .modal-price{font-family:'Cormorant Garamond',serif;font-size:32px;color:#c4a96a;font-weight:300;margin-bottom:24px;}
-.modal-desc{font-size:13px;color:rgba(240,232,208,0.5);line-height:1.8;font-weight:300;margin-bottom:28px;}
+.modal-desc{font-size:13px;color:rgba(240,232,208,0.5);line-height:1.8;font-weight:300;margin-bottom:16px;}
+.modal-note{font-size:11px;color:rgba(240,232,208,0.3);line-height:1.7;border-left:2px solid rgba(138,128,96,0.3);padding-left:12px;margin-bottom:20px;font-weight:300;}
 .modal-divider{width:40px;height:1px;background:#8a8060;margin-bottom:24px;}
 .modal-option-label{font-size:8px;letter-spacing:3px;text-transform:uppercase;color:#8a8060;font-weight:600;margin-bottom:10px;}
 .variant-selector{display:flex;flex-direction:column;gap:8px;margin-bottom:20px;}
@@ -420,8 +421,8 @@ footer{background:#0a0a0a;border-top:1px solid rgba(138,128,96,0.12);padding:60p
       <span class="section-tag">Unsere Geschichte</span>
       <div class="section-rule"></div>
       <h2>Vom Tisch ins<br><em>Wohnzimmer</em></h2>
-      <p>Im Padella Vino am Marktplatz Dieburg öffnen wir täglich Hunderte Flaschen – Barolo, Amarone, Grappa, Prosecco. Jede dieser Flaschen trägt eine Geschichte: einen Abend, ein Gespräch, einen besonderen Moment.</p>
-      <p>Statt die Flaschen wegzuwerfen, haben wir angefangen, sie zu verwandeln. Mit einer Glasschneidemaschine, einem Schleifer und einer Graviernadel entstehen daraus Objekte, die lange bleiben.</p>
+      <p>Im Padella Vino am Marktplatz Dieburg öffnen wir täglich unzählige Flaschen – Barolo, Amarone, Grappa, Prosecco. Jede dieser Flaschen trägt eine Geschichte: einen Abend, ein Gespräch, einen besonderen Moment.</p>
+      <p>Statt die Flaschen wegzuwerfen, haben wir angefangen, sie zu verwandeln und ihnen ein zweites Leben zu geben. Mit einer Glasschneidemaschine, einem Schleifer und einer Graviernadel entstehen daraus in reiner Handarbeit einzigartige Unikate, die lange bleiben.</p>
       <p>Flaconella ist kein Industrieprodukt. Es ist ein Nebenprodukt echter Gastfreundschaft.</p>
       <a href="#individual" class="story-link">Mehr erfahren →</a>
     </div>
@@ -794,28 +795,30 @@ const PRODUCTS = [
   // ── WINDLICHTER ──
   {
     id:'w1', cat:'windlicht', label:'Windlicht',
-    name:'Windlicht Blumen',
-    tagline:'Braune Flasche, floraler Schliff, Teelicht',
-    desc:'Abgeschnittene braune Weinflasche mit sorgfältig geschliffenem Rand und feinem Blütenmuster. Warmweißes Teelicht inklusive. Perfekt auf dem Esstisch, Balkon oder als Tischdeko für besondere Abende.',
+    name:'Windlicht Traube',
+    tagline:'Braune Flasche, Trauben-Dekor, Wachsteelicht',
+    desc:'Geschnittene braune Weinflasche mit geschliffenem Rand und feinem Dekor. Warmweißes Wachsteelicht mit Batterie und Untersetzer inklusive. Auf Wunsch im Geschenkkarton: +10 €',
+    note:'Unsere Windlichter können auch mit echten Teelichtern genutzt werden – jedoch nicht unbeaufsichtigt. Flasche wird bei Benutzung mit echten Kerzen heiß. Nicht für Kinder geeignet. Flaschen können scharfe Kanten haben.',
     icon:'🕯️', badge:'Bestseller', badgeType:'',
     image:'images/braune_flasche_windlicht_blumen_01.webp',
     variants:[
-      {name:'Standard – ohne Gravur', price:22},
-      {name:'Mit Standardmotiv (Weintraube, Olivenzweig…)', price:28},
-      {name:'Mit Wunschgravur (Text oder Datum)', price:40, hasEngraving:true},
+      {name:'Standard – ohne Gravur', price:29},
+      {name:'Mit Standardmotiv', price:39},
+      {name:'Mit Wunschgravur', price:49, hasEngraving:true},
     ]
   },
   {
     id:'w2', cat:'windlicht', label:'Windlicht',
     name:'Windlicht Noir',
     tagline:'Schwarze Flasche, florale Gravur',
-    desc:'Dunkle Bordeaux-Flasche mit geschliffenem Rand und eingraviertem Blütenmuster – das Licht des Teelichts bringt die Gravur erst richtig zur Geltung. Elegante Optik für einen Esstisch mit Stil.',
+    desc:'Dunkle Bordeaux-Flasche mit geschliffenem Rand und eingraviertem Blütenmuster – das Licht des Teelichts bringt die Gravur erst richtig zur Geltung. Elegante Optik für einen Esstisch mit Stil. Warmweißes Wachsteelicht mit Batterie und Untersetzer inklusive.',
+    note:'Unsere Windlichter können auch mit echten Teelichtern genutzt werden – jedoch nicht unbeaufsichtigt. Flasche wird bei Benutzung mit echten Kerzen heiß. Nicht für Kinder geeignet. Flaschen können scharfe Kanten haben.',
     icon:'🕯️', badge:'', badgeType:'',
     image:'images/schwarze_flasche_windlicht_blumen_01.webp',
     variants:[
-      {name:'Standard – ohne Gravur', price:22},
-      {name:'Mit Blütenmotiv', price:30},
-      {name:'Mit Wunschgravur', price:40, hasEngraving:true},
+      {name:'Standard – ohne Gravur', price:29},
+      {name:'Mit Blütenmotiv', price:39},
+      {name:'Mit Wunschgravur', price:49, hasEngraving:true},
     ]
   },
   {
@@ -847,27 +850,29 @@ const PRODUCTS = [
   {
     id:'k1', cat:'kerzenhalter', label:'Kerzenhalter',
     name:'Kerzenhalter 3er-Set',
-    tagline:'Drei Flaschen, ein stimmungsvolles Ensemble',
-    desc:'Drei aufeinander abgestimmte Flaschen mit Kerzenaufsatz – unterschiedliche Höhen, gleicher Stil. Als Tischdeko für besondere Abende oder als Geschenk-Set, das bleibt.',
+    tagline:'Einzeln oder als Set – mit Wachskerze inklusive',
+    desc:'Aufeinander abgestimmte Flaschen mit Kerzenaufsatz – unterschiedliche Höhen, gleicher Stil. Als Tischdeko für besondere Abende oder als Geschenk-Set, das bleibt. Wachskerzen inklusive.',
     icon:'🍷', badge:'Set', badgeType:'',
     image:'images/kerzenhalter_set_3er_02.webp',
     variants:[
-      {name:'3er-Set standard', price:65},
-      {name:'3er-Set mit Gravur (alle 3)', price:90, hasEngraving:true},
+      {name:'Einzel', price:29},
+      {name:'Einzel mit Gravur', price:39, hasEngraving:true},
+      {name:'3er-Set standard', price:85},
+      {name:'3er-Set mit Gravur (alle 3)', price:109, hasEngraving:true},
     ]
   },
 
   // ── FLASCHENLAMPEN ──
   {
     id:'l1', cat:'lampe', label:'Lampe',
-    name:'Flaschenlampe Bulgarini',
-    tagline:'Elegante Grappa-Flasche mit warmweißer Lichterkette',
-    desc:'Die hohe Bulgarini-Grappa-Flasche mit ihrem schlanken Hals und Korkstopfen wird mit einer warmweißen LED-Lichterkette gefüllt. Ein echter Hingucker auf dem Regal, Sideboard oder Esstisch.',
+    name:'Flaschenlampe Elegance',
+    tagline:'Mediteran gravierte Lugana-Dekorflasche mit LED-Lichterkette',
+    desc:'Mediteran gravierte, elegante Lugana-Dekorflasche mit schlankem Hals und einer LED-FlaschenkorkenLichterkette. Ein echter Hingucker auf dem Regal, Sideboard, Esstisch oder auch Terrasse und Garten.',
     icon:'💡', badge:'Bestseller', badgeType:'',
     image:'images/lampe-bulgarini-classic.webp',
     variants:[
-      {name:'Standard (USB)', price:38},
-      {name:'Mit Gravur + USB', price:52, hasEngraving:true},
+      {name:'Standard', price:29},
+      {name:'Mit Solar-Lichterkette', price:34},
     ]
   },
   {
@@ -1259,6 +1264,7 @@ function renderModal(){
     <div class="modal-tagline">${p.tagline}</div>
     <div class="modal-price" id="modalPrice">${p.variants[0].price} €</div>
     <p class="modal-desc">${p.desc}</p>
+    ${p.note ? `<p class="modal-note">${p.note}</p>` : ''}
     <div class="modal-divider"></div>
     <div class="modal-option-label">Variante wählen</div>
     <div class="variant-selector">
