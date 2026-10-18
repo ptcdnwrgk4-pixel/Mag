@@ -186,6 +186,14 @@ Setup: `/install module-installs/stimme`
 
 ---
 
+## TradingBot (eigenes Repo)
+
+Der Krypto-TradingBot liegt in `kosmyra-trade` (github.com/ptcdnwrgk4-pixel/kosmyra-trade, Branch `claude/tradingbot-v2`).
+Backtest-first, drei Phasen, harter Risikolayer. Details in dessen `CLAUDE.md` und `plans/2026-10-18-tradingbot-v2.md`.
+Der alte Bot auf Branch `claude/tradingbot-creation-yvH64` ist verworfen und wird nicht gemergt.
+
+---
+
 ## Hinweise
 
 - `context/aufgaben.md` aktuell halten — Friday liest das bei `/briefing` und `/prime`
